@@ -1,0 +1,105 @@
+.studentAttendance {
+  margin-bottom: 1rem;
+}
+
+.studentAttendance h1 {
+  font-size: 25px;
+  text-align: center;
+  font-family: fangsong;
+  color: #3d3d3d;
+  border-bottom: 1px solid grey;
+}
+
+.studentAttendanceSection {
+  display: flex;
+  gap: 8px;
+  min-height: 400px;
+  max-height: 500px;
+}
+
+.studentAttendanceSection1 {
+  display: flex;
+  flex-direction: column;
+  min-width: 50%;
+  gap: 8px;
+}
+
+.showStudent {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 1rem;
+  background: white;
+  border: 1px solid lightgrey;
+  border-radius: 4px;
+  flex: 1;
+}
+
+.showStudent h3 {
+  font-size: 18px;
+  font-weight: 400;
+  color: #3d3d3d;
+  border-bottom: 1px solid lightgrey;
+  padding-bottom: 4px;
+}
+
+.addGreen {
+  color: green !important;
+  border-color: green !important;
+}
+
+.addRed {
+  color: red !important;
+  border-color: red !important;
+}
+
+.addOrange {
+  color: orange !important;
+  border-color: orange !important;
+}
+
+.showStudentList {
+  overflow-y: scroll;
+}
+
+.showStudentBox {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  border-bottom: 1px solid grey;
+  margin-bottom: 6px;
+}
+
+.showStudentName {
+  border: none !important;
+  font-size: 17px !important;
+}
+
+.showStudentActionButtons {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.showStudentActionButton {
+  display: flex;
+  align-items: center;
+}
+
+.lecture-modal .modal-content {
+  height: 90vh !important;
+  overflow: hidden !important;
+}
+
+.lecture-modal .modal-body {
+  overflow: scroll !important;
+}
+
+@media screen and (max-width: 500px) {
+  .studentAttendanceSection {
+    flex-direction: column;
+  }
+  .studentAttendanceSection1 {
+    width: 100%;
+  }
+}

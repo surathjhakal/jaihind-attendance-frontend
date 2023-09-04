@@ -1,0 +1,67 @@
+.login {
+  min-height: 95vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6a6a6a;
+}
+
+.loginBox {
+  border: 1px solid #c8c8c8;
+  height: 340px;
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: white;
+  box-shadow: 0 0 4px lightgrey;
+  padding-bottom: 1rem;
+}
+
+.loginOptions {
+  display: flex;
+}
+
+.loginOption {
+  flex: 1;
+  text-align: center;
+  padding: 0.6rem;
+  color: #898989;
+  background: #ebebeb;
+  cursor: pointer;
+}
+
+.loginOptionActive {
+  color: #6a6a6a;
+  background: white;
+  border-top: 3px solid #73ce41;
+}
+
+.loginForm {
+  padding: 0 1rem;
+}
+
+.loginButton {
+  width: 100%;
+  background: #73ce41;
+  border: none;
+}
+
+.login input {
+  color: #6a6a6a;
+}
+
+.login input:focus {
+  color: #6a6a6a;
+}
+
+.loginForgotPasswordButton {
+  text-align: end;
+  padding-right: 1rem;
+}
+
+@media screen and (max-width: 500px) {
+  .loginBox {
+    width: 95%;
+  }
+}

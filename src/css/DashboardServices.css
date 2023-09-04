@@ -1,0 +1,76 @@
+.dashboardServicesContainer {
+  min-height: 95vh;
+  margin: auto;
+  width: 80%;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.dashboardHeadingSection1 {
+  display: flex;
+  justify-content: space-between;
+}
+
+.dashboardHeadingSection2 {
+  display: flex;
+  flex-direction: column;
+}
+
+.createButton {
+  width: 100px;
+}
+
+.filtersSection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.filterButton {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.tableDataBox {
+  margin-top: 1rem;
+  text-align: center;
+}
+
+.tableDataBox th,
+.subjectAttendanceTable th {
+  background: #434343;
+  color: white;
+}
+
+/* .subjectAttendanceTable td {
+  background: #13c613;
+  color: white;
+}
+
+.subjectAttendanceTable td {
+  background: #db2323;
+  color: white;
+} */
+
+.actionsButtons {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.dashboardHeadingSection1 a,
+.actionsButtons a {
+  text-decoration: none;
+}
+
+@media screen and (max-width: 500px) {
+  .dashboardServicesContainer {
+    width: 100%;
+    padding: 1rem;
+  }
+  .filtersSection {
+    flex-wrap: wrap;
+  }
+}

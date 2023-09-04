@@ -1,0 +1,119 @@
+.dashboard {
+  min-height: 95vh;
+  text-align: center;
+  margin: auto;
+  width: 80%;
+  padding: 2rem;
+}
+
+.dashboardDate {
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 20px;
+  margin: 0;
+  margin-bottom: 0.4rem;
+  color: #2c384af2;
+}
+
+.dashboardUserName {
+  font-weight: 300;
+  font-size: 2rem;
+  line-height: 40px;
+  color: #2c384af2;
+  margin: 0;
+}
+
+.dashboardHand {
+  width: 38px;
+  height: 38px;
+  margin-left: 0.4rem;
+  color: #ffd236;
+  transform-origin: 75%;
+  display: inline-block;
+  animation: wave 3s ease infinite;
+}
+
+@keyframes wave {
+  0% {
+    transform: rotate(0deg);
+  }
+  10% {
+    transform: rotate(10deg);
+  }
+  20% {
+    transform: rotate(-16deg);
+  }
+  30% {
+    transform: rotate(16deg);
+  }
+  40% {
+    transform: rotate(-14deg);
+  }
+  50% {
+    transform: rotate(16deg);
+  }
+  60% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.dashboardHeading {
+  color: #3f3f3f;
+  font-weight: 400;
+  text-align: start;
+  font-size: 1.6rem;
+  text-transform: capitalize;
+}
+
+.dashboardServices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  min-height: 300px;
+  align-items: center;
+}
+
+.dashboardServices a {
+  text-decoration: none;
+}
+
+.dashboardBox {
+  height: 100px;
+  background: white;
+  min-width: 200px;
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+  border-radius: 8px;
+  display: flex;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: grey;
+  padding: 1rem;
+  border: 1px solid lightgrey;
+  align-items: center;
+  gap: 6px;
+}
+
+.dashboardBox:hover {
+  box-shadow: 0 0 10px grey;
+}
+
+@media screen and (max-width: 500px) {
+  .dashboard {
+    width: 100%;
+    padding: 1rem;
+  }
+  .dashboardServices {
+    flex-direction: column;
+  }
+  .dashboardServices a {
+    width: 100%;
+  }
+  .dashboardUserName {
+    font-size: 1.7rem;
+  }
+}

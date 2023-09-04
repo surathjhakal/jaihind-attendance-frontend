@@ -1,0 +1,17 @@
+.actionContainer {
+  min-height: 95vh;
+  margin: auto;
+  width: 600px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.actionButtons {
+  display: flex;
+  justify-content: end;
+}
+
+.filterDropdown {
+  min-width: 100px;
+}
