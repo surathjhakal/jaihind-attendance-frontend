@@ -57,6 +57,11 @@ const Profile = () => {
       return toast.error("you can't give empty name");
     setLoadingModal(true);
     let updatedUserData = userChanges;
+    if (
+      !updatedUserData.creation_date ||
+      updatedUserData.creation_date === undefined
+    )
+      updatedUserData.creation_date = new Date().toISOString();
     console.log(userData.profilePhoto);
     if (changeProfilePhoto.name !== userData.profilePhoto && profilePhoto) {
       fileService

@@ -19,6 +19,7 @@
 
 .createButton {
   width: 100px;
+  background: #3cb3ff;
 }
 
 .filtersSection {
@@ -44,15 +45,15 @@
   color: white;
 }
 
-/* .subjectAttendanceTable td {
+.subjectAttendanceTable .studentPresent {
   background: #13c613;
   color: white;
 }
 
-.subjectAttendanceTable td {
+.subjectAttendanceTable .studentAbsent {
   background: #db2323;
   color: white;
-} */
+}
 
 .actionsButtons {
   display: flex;
@@ -63,6 +64,19 @@
 .dashboardHeadingSection1 a,
 .actionsButtons a {
   text-decoration: none;
+}
+
+.viewButton {
+  background: #39a639;
+}
+
+.updateButton {
+  background: #ffc815;
+  color: black;
+}
+
+.deleteButton {
+  background: #f34444;
 }
 
 @media screen and (max-width: 500px) {

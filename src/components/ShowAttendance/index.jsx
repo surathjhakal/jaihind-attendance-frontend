@@ -1,30 +1,49 @@
+import HeaderContext from "@/context/HeaderContext";
 import studentService from "../../services/studentService";
-import { response } from "express";
-import React, { useEffect } from "react";
+import React, { useEffect, useContext, useState } from "react";
 import { Accordion, Modal, Table } from "react-bootstrap";
+import { toast } from "react-toastify";
+import {
+  checkPresentStatus,
+  getOverallAttendancePrecentage,
+  getSubjectAttendancePresent,
+} from "@/utilities/studentAttendance";
+import { formatDate } from "@/utilities/usefulFunctions";
 
 const ShowAttendance = ({ handleCloseModal, selectedItem, showModal }) => {
-  // useEffect(() => {
-  //   let sem;
-  //   const currentMonth = new Date().getMonth() + 1;
-  //   if ([6, 7, 8, 9, 10].includes(currentMonth)) {
-  //     if (selectedItem.year === 1) sem = 1;
-  //     else if (selectedItem.year === 2) sem = 3;
-  //     else sem = 5;
-  //   } else {
-  //     if (selectedItem.year === 1) sem = 2;
-  //     else if (selectedItem.year === 2) sem = 4;
-  //     else sem = 6;
-  //   }
-  //   studentService
-  //     .getAttendance({ courseID: selectedItem.courseID, sem: sem })
-  //     .then((res) => {
-  //       console.log(res);
-  //     })
-  //     .catch((err) => {
-  //       console.log(err);
-  //     });
-  // }, []);
+  const [attendanceData, setAttendanceData] = useState([]);
+  const [loadAttendance, setLoadAttendance] = useState(false);
+
+  useEffect(() => {
+    setLoadAttendance(true);
+    let sem;
+    const currentMonth = new Date().getMonth() + 1;
+    if ([6, 7, 8, 9, 10].includes(currentMonth)) {
+      if (selectedItem.year === 1) sem = 1;
+      else if (selectedItem.year === 2) sem = 3;
+      else sem = 5;
+    } else {
+      if (selectedItem.year === 1) sem = 2;
+      else if (selectedItem.year === 2) sem = 4;
+      else sem = 6;
+    }
+    sem = sem + "";
+    studentService
+      .getAttendance({ courseID: selectedItem.courseID, sem: sem })
+      .then((res) => {
+        setLoadAttendance(false);
+        setAttendanceData(res.data);
+        console.log(res);
+      })
+      .catch((err) => {
+        setLoadAttendance(false);
+        console.log(err);
+        toast.error("Error Loading Attendance !", {
+          position: toast.POSITION.BOTTOM_RIGHT,
+        });
+      });
+  }, []);
+
   return (
     <Modal
       show={showModal}
@@ -35,76 +54,92 @@ const ShowAttendance = ({ handleCloseModal, selectedItem, showModal }) => {
       centered
     >
       <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          View Attendance - {selectedItem.name}
+        <Modal.Title
+          id="contained-modal-title-vcenter"
+          style={{ color: "#6e6e6e", fontWeight: 400 }}
+        >
+          View Attendance -{" "}
+          <span style={{ color: "#494949", fontWeight: 500 }}>
+            {selectedItem.name}
+          </span>
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <Accordion>
-          <Accordion.Item eventKey="0">
-            <Accordion.Header>MAD</Accordion.Header>
-            <Accordion.Body style={{ padding: "1rem" }}>
-              <Table
-                striped
-                bordered
-                hover
-                responsive
-                borderless
-                className="subjectAttendanceTable"
-                style={{ margin: 0 }}
-              >
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Date</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>1</td>
-                    <td>10th August 2023</td>
-                    <td>Present</td>
-                  </tr>
-                  <tr>
-                    <td>2</td>
-                    <td>11th August 2023</td>
-                    <td>Present</td>
-                  </tr>
-                  <tr>
-                    <td>3</td>
-                    <td>12th August 2023</td>
-                    <td>Absent</td>
-                  </tr>
-                </tbody>
-              </Table>
-            </Accordion.Body>
-          </Accordion.Item>
-          <Accordion.Item eventKey="1">
-            <Accordion.Header>AI</Accordion.Header>
-            <Accordion.Body>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </Accordion.Body>
-          </Accordion.Item>
-          <Accordion.Item eventKey="2">
-            <Accordion.Header>Unity</Accordion.Header>
-            <Accordion.Body>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
-              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
-              enim ad minim veniam, quis nostrud exercitation ullamco laboris
-              nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in
-              reprehenderit in voluptate velit esse cillum dolore eu fugiat
-              nulla pariatur. Excepteur sint occaecat cupidatat non proident,
-              sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </Accordion.Body>
-          </Accordion.Item>
-        </Accordion>
+      <Modal.Body
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          flexDirection: "column",
+        }}
+      >
+        {loadAttendance ? (
+          <div className="loadingModalCircles">
+            <div className="loadingModalCircle"></div>
+            <div className="loadingModalCircle"></div>
+          </div>
+        ) : (
+          <>
+            <h2>
+              {getOverallAttendancePrecentage(attendanceData, selectedItem.id)}{" "}
+            </h2>
+            <Accordion style={{ width: "100%" }}>
+              {attendanceData.map((item, index) => (
+                <Accordion.Item eventKey={index}>
+                  <Accordion.Header>{item.subject.name}</Accordion.Header>
+                  <Accordion.Body style={{ padding: "1rem" }}>
+                    {item.lectures.length === 0 ? (
+                      <h1
+                        style={{
+                          margin: 0,
+                          fontSize: "1.1rem",
+                          fontWeight: 400,
+                          textAlign: "center",
+                        }}
+                      >
+                        No Lectures Recorded
+                      </h1>
+                    ) : (
+                      <>
+                        {getSubjectAttendancePresent(
+                          item.lectures,
+                          selectedItem.id
+                        )}
+                        <Table
+                          striped
+                          bordered
+                          hover
+                          responsive
+                          borderless
+                          className="subjectAttendanceTable"
+                          style={{ margin: 0 }}
+                        >
+                          <thead>
+                            <tr>
+                              <th>#</th>
+                              <th>Date</th>
+                              <th>Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {item.lectures.map((lecture, index) => (
+                              <tr>
+                                <td>{index + 1}</td>
+                                <td>{formatDate(lecture.time)}</td>
+                                {checkPresentStatus(
+                                  lecture.studentPresentIDs,
+                                  selectedItem.id
+                                )}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </Table>
+                      </>
+                    )}
+                  </Accordion.Body>
+                </Accordion.Item>
+              ))}
+            </Accordion>
+          </>
+        )}
       </Modal.Body>
     </Modal>
   );

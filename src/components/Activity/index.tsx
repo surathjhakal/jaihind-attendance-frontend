@@ -1,5 +1,6 @@
 import HeaderContext from "@/context/HeaderContext";
 import actionLogService from "@/services/actionLogService";
+import { sortData } from "@/utilities/usefulFunctions";
 import React, { useContext, useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
 
@@ -19,7 +20,9 @@ const Activity = (props: Props) => {
         })
         .then((res) => {
           console.log(res.data);
-          setActionLogsData(res.data);
+          const data = res.data;
+          data.sort(sortData);
+          setActionLogsData(data);
           setLoadingModal(false);
         });
     } else {
@@ -32,7 +35,9 @@ const Activity = (props: Props) => {
         })
         .then((res) => {
           console.log(res.data);
-          setActionLogsData(res.data);
+          const data = res.data;
+          data.sort(sortData);
+          setActionLogsData(data);
           setLoadingModal(false);
         });
     }

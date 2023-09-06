@@ -33,6 +33,7 @@
   border: 1px solid lightgrey;
   border-radius: 4px;
   flex: 1;
+  max-height: 400px;
 }
 
 .showStudent h3 {
@@ -60,6 +61,7 @@
 
 .showStudentList {
   overflow-y: scroll;
+  height: 100%;
 }
 
 .showStudentBox {
@@ -93,6 +95,17 @@
 
 .lecture-modal .modal-body {
   overflow: scroll !important;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.lectureTimePicker {
+  width: 100%;
+  padding: 6px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
 }
 
 @media screen and (max-width: 500px) {

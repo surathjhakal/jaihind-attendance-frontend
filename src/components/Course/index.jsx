@@ -12,6 +12,7 @@ import { courseFields } from "@/utilities/autoCompleteFields";
 import { v4 as uuidv4 } from "uuid";
 import UpdateAction from "../Actions/UpdateAction";
 import actionLogService from "@/services/actionLogService";
+import { sortData } from "@/utilities/usefulFunctions";
 
 const Course = (props) => {
   const { userData, setLoadingModal } = useContext(HeaderContext);
@@ -32,8 +33,10 @@ const Course = (props) => {
       .then((res) => {
         console.log(res.data);
         if (res.data) {
+          const data = res.data;
+          data.sort(sortData);
           setLoadingModal(false);
-          setCourseData(res.data);
+          setCourseData(data);
         }
       })
       .catch((error) => {
@@ -202,6 +205,7 @@ const Course = (props) => {
               <td className="actionsButtons">
                 <Button
                   variant="success"
+                  className="viewButton"
                   onClick={() => handleShowModal("view", courseDoc)}
                 >
                   View
@@ -210,12 +214,14 @@ const Course = (props) => {
                   <>
                     <Button
                       variant="warning"
+                      className="updateButton"
                       onClick={() => handleShowModal("update", courseDoc)}
                     >
                       Update
                     </Button>
                     <Button
                       variant="danger"
+                      className="deleteButton"
                       onClick={() => handleShowModal("delete", courseDoc)}
                     >
                       Delete

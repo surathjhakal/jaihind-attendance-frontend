@@ -10,6 +10,7 @@ const StudentAttendance = ({
   setAllStudents,
   handleOnChangeStudentsStatus,
   isDisabled,
+  studentsLoading,
 }: any) => {
   const onPresentStudentCancel = (student: any) => {
     setAllStudents([...allStudents, student]);
@@ -48,6 +49,7 @@ const StudentAttendance = ({
             onCancel={onPresentStudentCancel}
             color="green"
             isDisabled={isDisabled}
+            studentsLoading={studentsLoading}
           />
           {/* Absent Students */}
           <ShowStudent
@@ -57,6 +59,7 @@ const StudentAttendance = ({
             onCancel={onAbsentStudentCancel}
             color="red"
             isDisabled={isDisabled}
+            studentsLoading={studentsLoading}
           />
         </div>
         {/* All Students */}
@@ -68,6 +71,7 @@ const StudentAttendance = ({
             onSelect={onStudentPresent}
             color="orange"
             isDisabled={isDisabled}
+            studentsLoading={studentsLoading}
           />
         )}
       </div>

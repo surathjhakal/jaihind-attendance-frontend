@@ -14,6 +14,7 @@ import { v4 as uuidv4 } from "uuid";
 import CreateAction from "../Actions/CreateAction";
 import UpdateAction from "../Actions/UpdateAction";
 import actionLogService from "@/services/actionLogService";
+import { sortData } from "@/utilities/usefulFunctions";
 
 const Teacher = (props) => {
   const { userData, setLoadingModal, setCoursesData } =
@@ -35,8 +36,9 @@ const Teacher = (props) => {
       .then((res) => {
         console.log(res.data);
         if (res.data) {
-          setCoursesData(res.data);
-          const courseOptions = [defaultFilter, ...getFilterOptions(res.data)];
+          const data = res.data;
+          setCoursesData(data);
+          const courseOptions = [defaultFilter, ...getFilterOptions(data)];
           setCourseFilterOptions(courseOptions);
         }
       });
@@ -50,8 +52,10 @@ const Teacher = (props) => {
       .then((res) => {
         console.log(res.data);
         if (res.data) {
+          const data = res.data;
+          data.sort(sortData);
           setLoadingModal(false);
-          setTeacherData(res.data);
+          setTeacherData(data);
         }
       });
   }, []);
@@ -242,18 +246,21 @@ const Teacher = (props) => {
               <td className="actionsButtons">
                 <Button
                   variant="success"
+                  className="viewButton"
                   onClick={() => handleShowModal("view", teacherDoc)}
                 >
                   View
                 </Button>
                 <Button
                   variant="warning"
+                  className="updateButton"
                   onClick={() => handleShowModal("update", teacherDoc)}
                 >
                   Update
                 </Button>
                 <Button
                   variant="danger"
+                  className="deleteButton"
                   onClick={() => handleShowModal("delete", teacherDoc)}
                 >
                   Delete

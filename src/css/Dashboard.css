@@ -102,6 +102,11 @@
   box-shadow: 0 0 10px grey;
 }
 
+.studentDataInfo {
+  font-size: 1rem;
+  color: #4f4f4f;
+}
+
 @media screen and (max-width: 500px) {
   .dashboard {
     width: 100%;

@@ -13,6 +13,7 @@ const ShowStudent = ({
   onCancel,
   color,
   isDisabled,
+  studentsLoading,
 }: any) => {
   const getColor = () => {
     if (color === "green") return "addGreen";
@@ -22,33 +23,42 @@ const ShowStudent = ({
   return (
     <div className="showStudent">
       <h3 className={getColor()}>{title}</h3>
-      <div className="showStudentList">
-        {data?.map((student: any) => (
-          <div className="showStudentBox">
-            <h3 className="showStudentName">{student.name}</h3>
-            {!isDisabled && (
-              <div className="showStudentActionButtons">
-                {!disableButtons?.select && (
-                  <Button
-                    variant="success"
-                    className="showStudentActionButton"
-                    onClick={() => onSelect(student)}
-                  >
-                    <TiTick />
-                  </Button>
-                )}
-                <Button
-                  variant="danger"
-                  className="showStudentActionButton"
-                  onClick={() => onCancel(student)}
-                >
-                  <RxCross2 />
-                </Button>
-              </div>
-            )}
+      {studentsLoading ? (
+        <div>
+          <div className="loadingModalCircles">
+            <div className="loadingModalCircle"></div>
+            <div className="loadingModalCircle"></div>
           </div>
-        ))}
-      </div>
+        </div>
+      ) : (
+        <div className="showStudentList">
+          {[...data]?.map((student: any, index) => (
+            <div className="showStudentBox" key={index}>
+              <h3 className="showStudentName">{student.name}</h3>
+              {!isDisabled && (
+                <div className="showStudentActionButtons">
+                  {!disableButtons?.select && (
+                    <Button
+                      variant="success"
+                      className="showStudentActionButton"
+                      onClick={() => onSelect(student)}
+                    >
+                      <TiTick />
+                    </Button>
+                  )}
+                  <Button
+                    variant="danger"
+                    className="showStudentActionButton"
+                    onClick={() => onCancel(student)}
+                  >
+                    <RxCross2 />
+                  </Button>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };

@@ -8,6 +8,10 @@ const getStudent = (id) => {
   return http.get(`/student/${id}`);
 };
 
+const getStudentByUID = (uid) => {
+  return http.get(`/student/uid/${uid}`);
+};
+
 const createStudent = (data) => {
   return http.post("/student/", data);
 };
@@ -36,6 +40,7 @@ const studentService = {
   deleteStudent,
   sendEmail,
   getAttendance,
+  getStudentByUID,
 };
 
 export default studentService;

@@ -21,6 +21,11 @@ import { v4 as uuidv4 } from "uuid";
 import CreateLecture from "./CreateLecture";
 import UpdateLecture from "./UpdateLecture";
 import actionLogService from "@/services/actionLogService";
+import {
+  formatDate,
+  sortData,
+  sortLectureData,
+} from "@/utilities/usefulFunctions";
 
 type Props = {};
 
@@ -81,8 +86,10 @@ const Lecture = (props: Props) => {
         .then((res) => {
           console.log(res.data);
           if (res.data) {
+            const data = res.data;
+            data.sort(sortLectureData);
             setLoadingModal(false);
-            setLectureData(res.data);
+            setLectureData(data);
           }
         });
     }
@@ -194,7 +201,7 @@ const Lecture = (props: Props) => {
       studentPresentIDs: studentPresentIDs,
       studentAbsentIDs: studentAbsentIDs,
       departmentID: userData.departmentID,
-      time: new Date().toISOString(),
+      time: new Date(createData.time).toISOString(),
       creation_date: new Date().toISOString(),
     };
     console.log(lectureObj);
@@ -257,7 +264,7 @@ const Lecture = (props: Props) => {
       studentPresentIDs: studentPresentIDs,
       studentAbsentIDs: studentAbsentIDs,
       departmentID: selectedItem.departmentID,
-      time: selectedItem.time,
+      time: new Date(updateData.time).toISOString(),
       creation_date: selectedItem.creation_date,
     };
     console.log(lectureObj);
@@ -418,23 +425,26 @@ const Lecture = (props: Props) => {
               <td>{index + 1}</td>
               <td>{getSubjectName(lectureDoc.subjectID)}</td>
               <td>{getTeacherName(lectureDoc.teacherID)}</td>
-              <td>{showTime(lectureDoc.time)}</td>
+              <td>{formatDate(lectureDoc.time)}</td>
               <td className="actionsButtons">
                 <Button
                   variant="success"
                   onClick={() => handleShowModal("view", lectureDoc)}
+                  className="viewButton"
                 >
                   View
                 </Button>
                 <Button
                   variant="warning"
                   onClick={() => handleShowModal("update", lectureDoc)}
+                  className="updateButton"
                 >
                   Update
                 </Button>
                 <Button
                   variant="danger"
                   onClick={() => handleShowModal("delete", lectureDoc)}
+                  className="deleteButton"
                 >
                   Delete
                 </Button>

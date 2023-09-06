@@ -19,6 +19,7 @@ import CreateAction from "../Actions/CreateAction";
 import UpdateAction from "../Actions/UpdateAction";
 import { v4 as uuidv4 } from "uuid";
 import actionLogService from "@/services/actionLogService";
+import { sortData } from "@/utilities/usefulFunctions";
 
 const Subject = () => {
   const { userData, setLoadingModal, setCoursesData, setTeachersData } =
@@ -93,13 +94,18 @@ const Subject = () => {
     setLoadingModal(true);
     subjectService
       .getAllSubjects({
-        filter: { departmentID: userData.departmentID, teacherID: userData.id },
+        filter: {
+          departmentID: userData.departmentID,
+          teacherID: userData.role !== "Admin" && userData.id,
+        },
       })
       .then((res) => {
         console.log(res.data);
         if (res.data) {
+          const data = res.data;
+          data.sort(sortData);
           setLoadingModal(false);
-          setSubjectsData(res.data);
+          setSubjectsData(data);
         }
       })
       .catch((error) => {
@@ -344,6 +350,8 @@ const Subject = () => {
             <th>#</th>
             <th>Name</th>
             <th>Teacher</th>
+            <th>Year</th>
+            <th>Sem</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -353,21 +361,26 @@ const Subject = () => {
               <td>{index + 1}</td>
               <td>{subjectDoc.name}</td>
               <td>{getTeacherName(subjectDoc.teacherID)}</td>
+              <td>{subjectDoc.year}</td>
+              <td>{subjectDoc.sem}</td>
               <td className="actionsButtons">
                 <Button
                   variant="success"
+                  className="viewButton"
                   onClick={() => handleShowModal("view", subjectDoc)}
                 >
                   View
                 </Button>
                 <Button
                   variant="warning"
+                  className="updateButton"
                   onClick={() => handleShowModal("update", subjectDoc)}
                 >
                   Update
                 </Button>
                 <Button
                   variant="danger"
+                  className="deleteButton"
                   onClick={() => handleShowModal("delete", subjectDoc)}
                 >
                   Delete

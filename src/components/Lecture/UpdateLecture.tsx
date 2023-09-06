@@ -17,6 +17,7 @@ import studentService from "@/services/studentService";
 import lectureService from "@/services/lectureService";
 import { toast } from "react-toastify";
 import { updateSourceFile } from "typescript";
+import ReactDatePicker from "react-datepicker";
 
 const UpdateLecture = ({
   handleCloseModal,
@@ -51,6 +52,7 @@ const UpdateLecture = ({
     useState(teacherFilterOptions);
   const [subjectOptions, setSubjectOptions]: any =
     useState(subjectFilterOptions);
+  const [studentsLoading, setStudentsLoading]: any = useState(false);
 
   useEffect(() => {
     if (courseOptions && teacherOptions) {
@@ -65,6 +67,7 @@ const UpdateLecture = ({
         subject: subjectOptions.find(
           (option: any) => option.value.id === selectedItem.teacherID
         ),
+        time: new Date(selectedItem.time),
       };
       setUpdateData({ ...updateData, ...tempData });
     }
@@ -72,6 +75,7 @@ const UpdateLecture = ({
 
   useEffect(() => {
     if (updateData.course && updateData.year) {
+      setStudentsLoading(true);
       // Getting subjects from backend
       subjectService
         .getAllSubjects({
@@ -99,6 +103,7 @@ const UpdateLecture = ({
               .then((res) => {
                 console.log(res.data);
                 if (res.data) {
+                  setStudentsLoading(false);
                   const tempStudents = res.data;
                   const studentsPresent = tempStudents.filter((student: any) =>
                     selectedItem.studentPresentIDs?.includes(student.id)
@@ -207,7 +212,7 @@ const UpdateLecture = ({
           {disabled ? "View" : "Update"} Lecture
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{ maxHeight: "70vh", overflow: "scroll" }}>
         <Form>
           <Form.Group as={Row} className="mb-3" controlId={`formHorizontal1`}>
             <Form.Label column sm={2} style={{ textTransform: "capitalize" }}>
@@ -270,6 +275,24 @@ const UpdateLecture = ({
             </Col>
           </Form.Group>
 
+          <Form.Group as={Row} className="mb-3" controlId={`formHorizontal4`}>
+            <Form.Label column sm={2} style={{ textTransform: "capitalize" }}>
+              Time
+            </Form.Label>
+            <Col>
+              <ReactDatePicker
+                selected={updateData.time}
+                onChange={(date: any) => handleOnChange("time", date)}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                timeCaption="time"
+                dateFormat="MMMM d, yyyy h:mm aa"
+                className="lectureTimePicker"
+              />
+            </Col>
+          </Form.Group>
+
           {updateData.course && updateData.year && (
             <StudentAttendance
               studentsPresent={updateData.studentsPresent}
@@ -278,6 +301,7 @@ const UpdateLecture = ({
               allStudents={allStudents}
               setAllStudents={setAllStudents}
               isDisabled={disabled}
+              studentsLoading={studentsLoading}
             />
           )}
         </Form>

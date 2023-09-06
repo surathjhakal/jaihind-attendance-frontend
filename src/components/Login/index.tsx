@@ -45,16 +45,16 @@ const Login = (props: Props) => {
         .catch((error) => {
           setLoadingModal(false);
           console.log("ERROR LOGIN", error);
-          if (!error.response) return;
-          if (error.response.data.message === "INVALID_EMAIL") {
+          const errorMessage = error.response?.data?.message;
+          if (errorMessage === "INVALID_EMAIL") {
             toast.error("Invalid Email !", {
               position: toast.POSITION.BOTTOM_RIGHT,
             });
-          } else if (error.response.data.message === "INVALID_PASSWORD") {
+          } else if (errorMessage === "INVALID_PASSWORD") {
             toast.error("Invalid Password !", {
               position: toast.POSITION.BOTTOM_RIGHT,
             });
-          } else if (error.response.data.message === "EMAIL_NOT_FOUND") {
+          } else if (errorMessage === "EMAIL_NOT_FOUND") {
             toast.error("Email Not Found !", {
               position: toast.POSITION.BOTTOM_RIGHT,
             });
@@ -78,15 +78,16 @@ const Login = (props: Props) => {
         .catch((error) => {
           setLoadingModal(false);
           console.log("ERROR LOGIN", error);
-          if (error.response.data.message === "INVALID_EMAIL") {
+          const errorMessage = error.response?.data?.message;
+          if (errorMessage === "INVALID_EMAIL") {
             toast.error("Invalid Email !", {
               position: toast.POSITION.BOTTOM_RIGHT,
             });
-          } else if (error.response.data.message === "INVALID_PASSWORD") {
+          } else if (errorMessage === "INVALID_PASSWORD") {
             toast.error("Invalid Password !", {
               position: toast.POSITION.BOTTOM_RIGHT,
             });
-          } else if (error.response.data.message === "EMAIL_NOT_FOUND") {
+          } else if (errorMessage === "EMAIL_NOT_FOUND") {
             toast.error("Email Not Found !", {
               position: toast.POSITION.BOTTOM_RIGHT,
             });
@@ -148,9 +149,9 @@ const Login = (props: Props) => {
             LOGIN
           </Button>
         </Form>
-        <Link to="/login/forgotPassword" className="loginForgotPasswordButton">
+        {/* <Link to="/login/forgotPassword" className="loginForgotPasswordButton">
           Forgot password?
-        </Link>
+        </Link> */}
       </div>
     </div>
   );

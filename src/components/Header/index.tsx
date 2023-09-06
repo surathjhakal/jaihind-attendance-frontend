@@ -1,5 +1,5 @@
-import { Navbar, Container, Nav } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Navbar, Container, Nav, Button } from "react-bootstrap";
+import { Link, useLocation } from "react-router-dom";
 import "@/css/Header.css";
 import { FiLogOut } from "react-icons/fi";
 import adminService from "@/services/adminService";
@@ -12,6 +12,7 @@ type Props = {
 };
 
 const Header = () => {
+  const location = useLocation();
   const { userData, setUserData, profilePhoto }: any =
     useContext(HeaderContext);
   const handleOnLogout = () => {
@@ -41,6 +42,36 @@ const Header = () => {
             Jaihind College
           </Navbar.Brand>
         </Link>
+        {!userData && location.pathname === "/" && (
+          <Nav className="ml-auto headerNavLink">
+            <Link to="/login">
+              <Button
+                style={{
+                  background: "cadetblue",
+                  outline: "none",
+                  border: "none",
+                }}
+              >
+                Login
+              </Button>
+            </Link>
+          </Nav>
+        )}
+        {!userData && location.pathname === "/login" && (
+          <Nav className="ml-auto headerNavLink">
+            <Link to="/">
+              <Button
+                style={{
+                  background: "cadetblue",
+                  outline: "none",
+                  border: "none",
+                }}
+              >
+                Check Attendance
+              </Button>
+            </Link>
+          </Nav>
+        )}
         {userData && (
           <Nav className="ml-auto headerNavLink">
             <Link to="/profile">

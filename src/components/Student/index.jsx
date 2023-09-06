@@ -23,6 +23,7 @@ import CreateAction from "../Actions/CreateAction";
 import UpdateAction from "../Actions/UpdateAction";
 import actionLogService from "@/services/actionLogService";
 import ShowAttendance from "../ShowAttendance";
+import { sortData } from "@/utilities/usefulFunctions";
 
 const Student = (props) => {
   const { userData, setLoadingModal, setCoursesData } =
@@ -69,8 +70,10 @@ const Student = (props) => {
         .then((res) => {
           console.log(res.data, typeof res.data);
           if (res.data) {
+            const data = res.data;
+            data.sort(sortData);
             setLoadingModal(false);
-            setStudentData(res.data);
+            setStudentData(data);
           }
         })
         .catch((error) => {
@@ -270,6 +273,7 @@ const Student = (props) => {
         <thead>
           <tr>
             <th>#</th>
+            <th>UID</th>
             <th>Name</th>
             <th>Email</th>
             <th>Actions</th>
@@ -279,11 +283,13 @@ const Student = (props) => {
           {filterData(studentData)?.map((studentDoc, index) => (
             <tr>
               <td>{index + 1}</td>
+              <td>{studentDoc.uid}</td>
               <td>{studentDoc.name}</td>
               <td>{studentDoc.email}</td>
               <td className="actionsButtons">
                 <Button
                   variant="success"
+                  className="viewButton"
                   onClick={() => handleShowModal("view", studentDoc)}
                 >
                   View
@@ -292,12 +298,14 @@ const Student = (props) => {
                   <>
                     <Button
                       variant="warning"
+                      className="updateButton"
                       onClick={() => handleShowModal("update", studentDoc)}
                     >
                       Update
                     </Button>
                     <Button
                       variant="danger"
+                      className="deleteButton"
                       onClick={() => handleShowModal("delete", studentDoc)}
                     >
                       Delete
@@ -307,7 +315,7 @@ const Student = (props) => {
                 <Button
                   variant="info"
                   onClick={() => handleShowModal("attendance", studentDoc)}
-                  style={{ color: "white" }}
+                  style={{ background: "#cdfffc" }}
                 >
                   Attendance
                 </Button>

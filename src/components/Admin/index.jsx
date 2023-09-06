@@ -14,6 +14,7 @@ import CreateAction from "../Actions/CreateAction";
 import UpdateAction from "../Actions/UpdateAction";
 import HeaderContext from "@/context/HeaderContext";
 import actionLogService from "@/services/actionLogService";
+import { sortData } from "@/utilities/usefulFunctions";
 
 const Admin = () => {
   const { userData, setLoadingModal } = useContext(HeaderContext);
@@ -32,14 +33,18 @@ const Admin = () => {
     adminService.getAllAdmin().then((res) => {
       console.log(res.data);
       if (res.data) {
+        const data = res.data;
+        data.sort(sortData);
         setLoadingModal(false);
-        setAdminData(res.data);
+        setAdminData(data);
       }
     });
     departmentService.getAllDepartments().then((res) => {
       console.log(res.data);
       if (res.data) {
-        const departmentOptions = getFilterOptions(res.data);
+        const data = res.data;
+        data.sort(sortData);
+        const departmentOptions = getFilterOptions(data);
         setDepartmentFilterOptions([defaultFilter, ...departmentOptions]);
       }
     });
@@ -172,6 +177,14 @@ const Admin = () => {
     );
   };
 
+  const getDepartmentName = (id) => {
+    const department = departmentFilterOptions.find(
+      (department) => department.value.id === id
+    );
+    if (department !== -1) return department.value.name;
+    return "";
+  };
+
   return (
     <div className="dashboardServicesContainer">
       <div className="dashboardHeadingSection1">
@@ -213,6 +226,7 @@ const Admin = () => {
             <th>#</th>
             <th>Name</th>
             <th>Email</th>
+            <th>Department</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -222,22 +236,26 @@ const Admin = () => {
               <td>{index + 1}</td>
               <td>{adminDoc.name}</td>
               <td>{adminDoc.email}</td>
+              <td>{getDepartmentName(adminDoc.departmentID)}</td>
               <td className="actionsButtons">
                 <Button
                   variant="success"
                   onClick={() => handleShowModal("view", adminDoc)}
+                  className="viewButton"
                 >
                   View
                 </Button>
                 <Button
                   variant="warning"
                   onClick={() => handleShowModal("update", adminDoc)}
+                  className="updateButton"
                 >
                   Update
                 </Button>
                 <Button
                   variant="danger"
                   onClick={() => handleShowModal("delete", adminDoc)}
+                  className="deleteButton"
                 >
                   Delete
                 </Button>

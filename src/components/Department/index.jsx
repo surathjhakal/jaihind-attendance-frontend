@@ -12,6 +12,7 @@ import UpdateAction from "../Actions/UpdateAction";
 import HeaderContext from "@/context/HeaderContext";
 import { departmentFields } from "@/utilities/autoCompleteFields";
 import actionLogService from "@/services/actionLogService";
+import { sortData } from "@/utilities/usefulFunctions";
 
 const Department = (props) => {
   const { setLoadingModal, userData } = useContext(HeaderContext);
@@ -25,8 +26,10 @@ const Department = (props) => {
     departmentService.getAllDepartments().then((res) => {
       console.log(res.data);
       if (res.data) {
+        const data = res.data;
+        data.sort(sortData);
         setLoadingModal(false);
-        setDepartmentData(res.data);
+        setDepartmentData(data);
       }
     });
   }, []);
@@ -180,18 +183,21 @@ const Department = (props) => {
               <td className="actionsButtons">
                 <Button
                   variant="success"
+                  className="viewButton"
                   onClick={() => handleShowModal("view", departmentDoc)}
                 >
                   View
                 </Button>
                 <Button
                   variant="warning"
+                  className="updateButton"
                   onClick={() => handleShowModal("update", departmentDoc)}
                 >
                   Update
                 </Button>
                 <Button
                   variant="danger"
+                  className="deleteButton"
                   onClick={() => handleShowModal("delete", departmentDoc)}
                 >
                   Delete

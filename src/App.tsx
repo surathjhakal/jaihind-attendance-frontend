@@ -1,5 +1,6 @@
 import "bootstrap/dist/css/bootstrap.min.css";
 import "react-toastify/dist/ReactToastify.css";
+import "react-datepicker/dist/react-datepicker.css";
 import "./App.css";
 import Login from "@/components/Login";
 import Header from "@/components/Header";
@@ -26,6 +27,7 @@ import Department from "./components/Department";
 import Subject from "./components/Subject";
 import UpdateLecture from "./components/Lecture/UpdateLecture";
 import fileService from "./services/fileService";
+import AttendanceDashboard from "./components/AttendanceDashboard";
 
 function App() {
   const { userData, setUserData, setLoadingModal, setProfilePhoto }: any =
@@ -52,6 +54,8 @@ function App() {
                   position: toast.POSITION.BOTTOM_RIGHT,
                 });
               });
+          } else {
+            setProfilePhoto(null);
           }
         })
         .catch((error) => {
@@ -73,9 +77,10 @@ function App() {
       <Routes>
         {!userData ? (
           <>
+            <Route path="/" element={<AttendanceDashboard />} />
             <Route path="/login" element={<Login />} />
             <Route path="/login/forgotPassword" element={<ForgotPassword />} />
-            <Route path="*" element={<Navigate to="login" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
           </>
         ) : (
           <>

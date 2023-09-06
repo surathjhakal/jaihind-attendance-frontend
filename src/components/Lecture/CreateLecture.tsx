@@ -13,6 +13,7 @@ import HeaderContext from "@/context/HeaderContext";
 import studentService from "@/services/studentService";
 import courseService from "@/services/courseService";
 import teacherService from "@/services/teacherService";
+import ReactDatePicker from "react-datepicker";
 
 const CreateLecture = ({
   handleCloseModal,
@@ -32,8 +33,10 @@ const CreateLecture = ({
     subject: null,
     studentsPresent: [],
     studentsAbsent: [],
+    time: new Date(),
   });
   const [allStudents, setAllStudents]: any = useState([]);
+  const [studentsLoading, setStudentsLoading]: any = useState(false);
   const [courseOptions, setCourseOptions]: any = useState(courseFilterOptions);
   const [teacherOptions, setTeacherOptions]: any =
     useState(teacherFilterOptions);
@@ -42,6 +45,7 @@ const CreateLecture = ({
 
   useEffect(() => {
     if (createData.course && createData.year) {
+      setStudentsLoading(true);
       // Getting subjects from backend
       subjectService
         .getAllSubjects({
@@ -71,6 +75,7 @@ const CreateLecture = ({
         .then((res) => {
           console.log(res.data);
           if (res.data) {
+            setStudentsLoading(false);
             setAllStudents(res.data);
           }
         });
@@ -157,7 +162,7 @@ const CreateLecture = ({
           Create Lecture
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body>
+      <Modal.Body style={{ maxHeight: "70vh", overflow: "scroll" }}>
         <Form>
           <Form.Group as={Row} className="mb-3" controlId={`formHorizontal1`}>
             <Form.Label column sm={2} style={{ textTransform: "capitalize" }}>
@@ -214,6 +219,24 @@ const CreateLecture = ({
             </Col>
           </Form.Group>
 
+          <Form.Group as={Row} className="mb-3" controlId={`formHorizontal4`}>
+            <Form.Label column sm={2} style={{ textTransform: "capitalize" }}>
+              Time
+            </Form.Label>
+            <Col>
+              <ReactDatePicker
+                selected={createData.time}
+                onChange={(date: any) => handleOnChange("time", date)}
+                showTimeSelect
+                timeFormat="HH:mm"
+                timeIntervals={15}
+                timeCaption="time"
+                dateFormat="MMMM d, yyyy h:mm aa"
+                className="lectureTimePicker"
+              />
+            </Col>
+          </Form.Group>
+
           {createData.course && createData.year && (
             <StudentAttendance
               studentsPresent={createData.studentsPresent}
@@ -221,6 +244,7 @@ const CreateLecture = ({
               handleOnChangeStudentsStatus={handleOnChangeStudentsStatus}
               allStudents={allStudents}
               setAllStudents={setAllStudents}
+              studentsLoading={studentsLoading}
             />
           )}
         </Form>
