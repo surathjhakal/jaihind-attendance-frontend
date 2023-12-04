@@ -10,7 +10,11 @@ import {
   getOverallAttendancePrecentage,
   getSubjectAttendancePresent,
 } from "@/utilities/studentAttendance";
-import { formatDate } from "@/utilities/usefulFunctions";
+import {
+  formatDate,
+  formatTodayDate,
+  sortLectureData,
+} from "@/utilities/usefulFunctions";
 
 const AttendanceDashboard = () => {
   const { setLoadingModal } = useContext(HeaderContext);
@@ -45,7 +49,7 @@ const AttendanceDashboard = () => {
           const selectedStudent = res.data[0];
           let sem;
           const currentMonth = new Date().getMonth() + 1;
-          if ([6, 7, 8, 9, 10].includes(currentMonth)) {
+          if ([1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12].includes(currentMonth)) {
             if (selectedStudent.year === 1) sem = 1;
             else if (selectedStudent.year === 2) sem = 3;
             else sem = 5;
@@ -88,9 +92,10 @@ const AttendanceDashboard = () => {
 
   return (
     <div className="dashboard">
-      <h4 className="dashboardDate">Saturday, August 28</h4>
+      <h4 className="dashboardDate">{formatTodayDate()}</h4>
       <h1 className="dashboardUserName">
-        Hello, Student <GiHand className="dashboardHand" />
+        Hello, {studentData?.name ?? "Student"}{" "}
+        <GiHand className="dashboardHand" />
       </h1>
       <div className="partitionLine"></div>
       <h3 className="dashboardHeading" style={{ fontSize: "1.4rem" }}>
@@ -176,16 +181,18 @@ const AttendanceDashboard = () => {
                           </tr>
                         </thead>
                         <tbody>
-                          {item.lectures.map((lecture, index) => (
-                            <tr>
-                              <td>{index + 1}</td>
-                              <td>{formatDate(lecture.time)}</td>
-                              {checkPresentStatus(
-                                lecture.studentPresentIDs,
-                                studentData.id
-                              )}
-                            </tr>
-                          ))}
+                          {item.lectures
+                            .sort(sortLectureData)
+                            .map((lecture, index) => (
+                              <tr>
+                                <td>{index + 1}</td>
+                                <td>{formatDate(lecture.time)}</td>
+                                {checkPresentStatus(
+                                  lecture.studentPresentIDs,
+                                  studentData.id
+                                )}
+                              </tr>
+                            ))}
                         </tbody>
                       </Table>
                     </>

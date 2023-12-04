@@ -6,11 +6,13 @@ import adminService from "@/services/adminService";
 import HeaderContext from "@/context/HeaderContext";
 import { toast } from "react-toastify";
 import teacherService from "@/services/teacherService";
+import fileService from "@/services/fileService";
 
 type Props = {};
 
 const Login = (props: Props) => {
-  const { setUserData, setLoadingModal }: any = useContext(HeaderContext);
+  const { setUserData, setLoadingModal, setProfilePhoto }: any =
+    useContext(HeaderContext);
   const [loginOption, setLoginOption] = useState<string>("Admin");
   const [userCredentials, setUserCredentials] = useState({
     email: "",
@@ -40,6 +42,22 @@ const Login = (props: Props) => {
           if (res.data) {
             setLoadingModal(false);
             setUserData(res.data);
+            if (res.data.profilePhoto && res.data.profilePhoto !== "") {
+              fileService
+                .getProfilePhoto(res.data.profilePhoto)
+                .then((res) => {
+                  console.log(res);
+                  setProfilePhoto(res.data);
+                })
+                .catch((err) => {
+                  console.log(err);
+                  toast.error("Error fetching profile photo", {
+                    position: toast.POSITION.BOTTOM_RIGHT,
+                  });
+                });
+            } else {
+              setProfilePhoto(null);
+            }
           }
         })
         .catch((error) => {
@@ -73,6 +91,22 @@ const Login = (props: Props) => {
           if (res.data) {
             setLoadingModal(false);
             setUserData(res.data);
+            if (res.data.profilePhoto && res.data.profilePhoto !== "") {
+              fileService
+                .getProfilePhoto(res.data.profilePhoto)
+                .then((res) => {
+                  console.log(res);
+                  setProfilePhoto(res.data);
+                })
+                .catch((err) => {
+                  console.log(err);
+                  toast.error("Error fetching profile photo", {
+                    position: toast.POSITION.BOTTOM_RIGHT,
+                  });
+                });
+            } else {
+              setProfilePhoto(null);
+            }
           }
         })
         .catch((error) => {

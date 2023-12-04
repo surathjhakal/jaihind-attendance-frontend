@@ -8,7 +8,11 @@ import {
   getOverallAttendancePrecentage,
   getSubjectAttendancePresent,
 } from "@/utilities/studentAttendance";
-import { formatDate } from "@/utilities/usefulFunctions";
+import {
+  formatDate,
+  sortData,
+  sortLectureData,
+} from "@/utilities/usefulFunctions";
 
 const ShowAttendance = ({ handleCloseModal, selectedItem, showModal }) => {
   const [attendanceData, setAttendanceData] = useState([]);
@@ -18,7 +22,7 @@ const ShowAttendance = ({ handleCloseModal, selectedItem, showModal }) => {
     setLoadAttendance(true);
     let sem;
     const currentMonth = new Date().getMonth() + 1;
-    if ([6, 7, 8, 9, 10].includes(currentMonth)) {
+    if ([1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12].includes(currentMonth)) {
       if (selectedItem.year === 1) sem = 1;
       else if (selectedItem.year === 2) sem = 3;
       else sem = 5;
@@ -82,6 +86,18 @@ const ShowAttendance = ({ handleCloseModal, selectedItem, showModal }) => {
               {getOverallAttendancePrecentage(attendanceData, selectedItem.id)}{" "}
             </h2>
             <Accordion style={{ width: "100%" }}>
+              {attendanceData?.length === 0 && (
+                <h1
+                  style={{
+                    margin: 0,
+                    fontSize: "1.1rem",
+                    fontWeight: 400,
+                    textAlign: "center",
+                  }}
+                >
+                  No Attendance
+                </h1>
+              )}
               {attendanceData.map((item, index) => (
                 <Accordion.Item eventKey={index}>
                   <Accordion.Header>{item.subject.name}</Accordion.Header>
@@ -120,16 +136,18 @@ const ShowAttendance = ({ handleCloseModal, selectedItem, showModal }) => {
                             </tr>
                           </thead>
                           <tbody>
-                            {item.lectures.map((lecture, index) => (
-                              <tr>
-                                <td>{index + 1}</td>
-                                <td>{formatDate(lecture.time)}</td>
-                                {checkPresentStatus(
-                                  lecture.studentPresentIDs,
-                                  selectedItem.id
-                                )}
-                              </tr>
-                            ))}
+                            {item.lectures
+                              .sort(sortLectureData)
+                              .map((lecture, index) => (
+                                <tr>
+                                  <td>{index + 1}</td>
+                                  <td>{formatDate(lecture.time)}</td>
+                                  {checkPresentStatus(
+                                    lecture.studentPresentIDs,
+                                    selectedItem.id
+                                  )}
+                                </tr>
+                              ))}
                           </tbody>
                         </Table>
                       </>

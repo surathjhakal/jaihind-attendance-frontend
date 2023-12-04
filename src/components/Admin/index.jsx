@@ -181,7 +181,7 @@ const Admin = () => {
     const department = departmentFilterOptions.find(
       (department) => department.value.id === id
     );
-    if (department !== -1) return department.value.name;
+    if (department !== -1 && department) return department?.value?.name;
     return "";
   };
 

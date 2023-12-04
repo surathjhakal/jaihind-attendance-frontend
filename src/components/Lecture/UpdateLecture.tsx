@@ -112,6 +112,12 @@ const UpdateLecture = ({
                     selectedItem.studentAbsentIDs?.includes(student.id)
                   );
 
+                  const leftStudents = tempStudents.filter(
+                    (student: any) =>
+                      !selectedItem.studentAbsentIDs?.includes(student.id) &&
+                      !selectedItem.studentPresentIDs?.includes(student.id)
+                  );
+
                   const tempData = {
                     subject: tempSubjectsData.find(
                       (option: any) =>
@@ -122,6 +128,7 @@ const UpdateLecture = ({
                   };
                   console.log(tempData);
                   setUpdateData({ ...updateData, ...tempData });
+                  setAllStudents(leftStudents);
                 }
               });
           }

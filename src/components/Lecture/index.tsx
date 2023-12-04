@@ -265,7 +265,7 @@ const Lecture = (props: Props) => {
       studentAbsentIDs: studentAbsentIDs,
       departmentID: selectedItem.departmentID,
       time: new Date(updateData.time).toISOString(),
-      creation_date: selectedItem.creation_date,
+      creation_date: selectedItem.creation_date ?? new Date().toISOString(),
     };
     console.log(lectureObj);
     lectureService

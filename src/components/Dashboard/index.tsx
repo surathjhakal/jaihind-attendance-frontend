@@ -10,6 +10,7 @@ import { SiCoursera } from "react-icons/si";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import { FcDepartment } from "react-icons/fc";
 import { RxActivityLog } from "react-icons/rx";
+import { formatTodayDate } from "@/utilities/usefulFunctions";
 
 type Props = {};
 
@@ -17,7 +18,7 @@ const Dashboard = (props: Props) => {
   const { userData, setUserData }: any = useContext(HeaderContext);
   return (
     <div className="dashboard">
-      <h4 className="dashboardDate">Saturday, August 28</h4>
+      <h4 className="dashboardDate">{formatTodayDate()}</h4>
       <h1 className="dashboardUserName">
         Hello, {userData.name} <GiHand className="dashboardHand" />
       </h1>

@@ -1,6 +1,6 @@
 import HeaderContext from "@/context/HeaderContext";
 import actionLogService from "@/services/actionLogService";
-import { sortData } from "@/utilities/usefulFunctions";
+import { formatDate, sortData } from "@/utilities/usefulFunctions";
 import React, { useContext, useEffect, useState } from "react";
 import { Alert } from "react-bootstrap";
 
@@ -55,8 +55,12 @@ const Activity = (props: Props) => {
       <div className="partitionLine"></div>
       <div className="activityLogsList">
         {actionLogsData.map((log: any, index) => (
-          <Alert key={index} variant={getVariant(log)}>
-            {log.message}
+          <Alert
+            key={index}
+            variant={getVariant(log)}
+            style={{ display: "flex", justifyContent: "space-between" }}
+          >
+            {log.message} <span>{formatDate(log.creation_date)}</span>
           </Alert>
         ))}
       </div>
