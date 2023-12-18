@@ -332,10 +332,10 @@ const Lecture = (props: Props) => {
 
   const filterSubjects = (data: any) => {
     console.log(data);
-    if (selectedTeacherFilter.length > 1) {
+    if (selectedTeacherFilter.label !== "All") {
       const filterSubjectOptions = data.filter(
         (subject: any) =>
-          subject.value.teacherID === selectedTeacherFilter.value.id
+          subject.value?.teacherID === selectedTeacherFilter.value.id
       );
       console.log(selectedTeacherFilter, filterSubjectOptions);
       return filterSubjectOptions;

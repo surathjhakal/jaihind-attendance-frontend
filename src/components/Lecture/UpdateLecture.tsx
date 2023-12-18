@@ -65,7 +65,7 @@ const UpdateLecture = ({
           (option: any) => option.value.id === selectedItem.teacherID
         ),
         subject: subjectOptions.find(
-          (option: any) => option.value.id === selectedItem.teacherID
+          (option: any) => option.value.id === selectedItem.subjectID
         ),
         time: new Date(selectedItem.time),
       };

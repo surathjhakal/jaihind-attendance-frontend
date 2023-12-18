@@ -19,7 +19,7 @@ const quotes = [
 ];
 
 const LoadingModal = () => {
-  const { loadingModal }: any = useContext(HeaderContext);
+  const { loadingModal, loadingMessage }: any = useContext(HeaderContext);
   console.log(loadingModal);
   return (
     <Modal
@@ -28,7 +28,9 @@ const LoadingModal = () => {
       centered
     >
       <Modal.Body className="loadingModal">
-        <p>{quotes[Math.floor(Math.random() * quotes.length)]}</p>
+        <p>
+          {loadingMessage || quotes[Math.floor(Math.random() * quotes.length)]}
+        </p>
         <div className="loadingModalCircles">
           <div className="loadingModalCircle"></div>
           <div className="loadingModalCircle"></div>

@@ -272,6 +272,7 @@ const Admin = () => {
           type="admin"
           fields={adminFields}
           loading={loading}
+          departmentsData={departmentFilterOptions}
         />
       )}
       {showModal === "view" && (
@@ -282,6 +283,7 @@ const Admin = () => {
           type="admin"
           fields={adminFields}
           disabled={true}
+          departmentsData={departmentFilterOptions}
         />
       )}
       {showModal === "update" && (
@@ -293,6 +295,7 @@ const Admin = () => {
           type="admin"
           fields={adminFields}
           loading={loading}
+          departmentsData={departmentFilterOptions}
         />
       )}
       {showModal === "delete" && (

@@ -4,6 +4,7 @@ import HeaderContext from "./HeaderContext";
 const ContextWrapper = ({ children }) => {
   const [userData, setUserData] = useState(null);
   const [loadingModal, setLoadingModal] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState(null);
   const [coursesData, setCoursesData] = useState(null);
   const [teachersData, setTeachersData] = useState(null);
   const [departmentsData, setDepartmentsData] = useState(null);
@@ -17,6 +18,8 @@ const ContextWrapper = ({ children }) => {
         setUserData,
         loadingModal,
         setLoadingModal,
+        loadingMessage,
+        setLoadingMessage,
         coursesData,
         setCoursesData,
         teachersData,

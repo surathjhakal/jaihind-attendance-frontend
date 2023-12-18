@@ -25,69 +25,28 @@ const UpdateAction = ({
   fields,
   disabled,
   loading,
+  teachersData,
+  departmentsData,
+  coursesData,
+  subjectsData,
 }) => {
-  const {
-    userData,
-    teachersData,
-    setTeachersData,
-    departmentsData,
-    setDepartmentsData,
-    coursesData,
-    setCoursesData,
-    subjectsData,
-    setSubjectsData,
-  } = useContext(HeaderContext);
-
-  const navigate = useNavigate();
+  const { userData } = useContext(HeaderContext);
   const [updateData, setUpdateData] = useState({});
 
-  useEffect(() => {
-    if (["admin"].includes(type) && !departmentsData) {
-      departmentService
-        .getAllDepartments()
-        .then(({ data }) => data)
-        .then((data) => setDepartmentsData(data));
-    }
-    console.log(["teacher", "subject", "student"].includes(type), coursesData);
-    if (["teacher", "subject", "student"].includes(type) && !coursesData) {
-      courseService
-        .getAllCourses({
-          filter: { departmentID: userData.departmentID },
-        })
-        .then(({ data }) => data)
-        .then((data) => {
-          console.log(data);
-          setCoursesData(data);
-        });
-    }
-
-    if (["subject"].includes(type) && !teachersData) {
-      teacherService
-        .getAllTeacher({
-          filter: { departmentID: userData.departmentID },
-        })
-        .then(({ data }) => data)
-        .then((data) => setTeachersData(data));
-    }
-  }, []);
-
   const getOptionsList = (value) => {
-    if (value === "department" && departmentsData) {
-      return getFilterOptions(departmentsData);
-    } else if (value === "course" && coursesData) {
-      console.log(getFilterOptions(coursesData));
-      console.log(coursesData);
-      return getFilterOptions(coursesData);
+    if (value === "department") {
+      return departmentsData;
+    } else if (value === "course") {
+      return coursesData;
     } else if (value === "year") {
       return yearFilterOptions;
     } else if (value === "sem") {
       return semFilterOptions;
-    } else if (value === "teacher" && teachersData) {
-      return getFilterOptions(teachersData);
-    } else if (value === "subject" && subjectsData) {
-      return getFilterOptions(subjectsData);
+    } else if (value === "teacher") {
+      return teachersData;
+    } else if (value === "subject") {
+      return subjectsData;
     }
-    return [];
   };
 
   console.log(updateData);

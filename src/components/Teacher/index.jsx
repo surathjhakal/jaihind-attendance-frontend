@@ -278,6 +278,7 @@ const Teacher = (props) => {
           type="teacher"
           fields={teacherFields}
           loading={loading}
+          coursesData={courseFilterOptions}
         />
       )}
       {showModal === "view" && (
@@ -288,6 +289,7 @@ const Teacher = (props) => {
           type="teacher"
           fields={teacherFields}
           disabled={true}
+          coursesData={courseFilterOptions}
         />
       )}
       {showModal === "update" && (
@@ -299,6 +301,7 @@ const Teacher = (props) => {
           type="teacher"
           fields={teacherFields}
           loading={loading}
+          coursesData={courseFilterOptions}
         />
       )}
       {showModal === "delete" && (

@@ -5,12 +5,14 @@ import { Link } from "react-router-dom";
 import { GiHand } from "react-icons/gi";
 import { BiSolidDashboard } from "react-icons/bi";
 import { MdAdminPanelSettings, MdCoPresent, MdTopic } from "react-icons/md";
+import { SiMicrosoftexcel } from "react-icons/si";
 import { PiStudentBold } from "react-icons/pi";
 import { SiCoursera } from "react-icons/si";
 import { FaChalkboardTeacher } from "react-icons/fa";
 import { FcDepartment } from "react-icons/fc";
 import { RxActivityLog } from "react-icons/rx";
 import { formatTodayDate } from "@/utilities/usefulFunctions";
+import { MdOutgoingMail } from "react-icons/md";
 
 type Props = {};
 
@@ -69,6 +71,18 @@ const Dashboard = (props: Props) => {
               <div className="dashboardBox">
                 Activity Logs
                 <RxActivityLog />
+              </div>
+            </Link>
+            <Link to="export">
+              <div className="dashboardBox">
+                Export to Excel
+                <SiMicrosoftexcel />
+              </div>
+            </Link>
+            <Link to="attendance-mail-reminder">
+              <div className="dashboardBox">
+                Send Mail Reminder
+                <MdOutgoingMail />
               </div>
             </Link>
           </>

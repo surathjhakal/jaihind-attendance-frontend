@@ -81,18 +81,13 @@ const Profile = () => {
       updatedUserData.profilePhoto = formatFileName(changeProfilePhoto?.name);
       const formData = new FormData();
       formData.append("file", changeProfilePhoto);
-      fileService
-        .uploadProfilePhoto(formData)
-        .then((res) => {
-          console.log("file uploaded", res);
-        })
-        .catch((err) => {
-          console.log(err);
-          setLoadingModal(false);
-          toast.error("Error in file upload", {
-            position: toast.POSITION.BOTTOM_RIGHT,
-          });
+      await fileService.uploadProfilePhoto(formData).catch((err) => {
+        console.log(err);
+        setLoadingModal(false);
+        toast.error("Error in file upload", {
+          position: toast.POSITION.BOTTOM_RIGHT,
         });
+      });
     }
     if (userData.role === "Admin") {
       adminService

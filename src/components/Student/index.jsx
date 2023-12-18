@@ -331,6 +331,7 @@ const Student = (props) => {
           showModal={showModal}
           type="student"
           fields={studentFields}
+          coursesData={courseFilterOptions}
           loading={loading}
         />
       )}
@@ -341,6 +342,7 @@ const Student = (props) => {
           showModal={showModal}
           type="student"
           fields={studentFields}
+          coursesData={courseFilterOptions}
           disabled={true}
         />
       )}
@@ -352,6 +354,7 @@ const Student = (props) => {
           showModal={showModal}
           type="student"
           fields={studentFields}
+          coursesData={courseFilterOptions}
           loading={loading}
         />
       )}

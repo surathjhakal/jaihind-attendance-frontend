@@ -86,3 +86,19 @@ export const formatTodayDate = () => {
 
   return `${dayOfWeek}, ${month} ${day}`;
 };
+
+export const getSem = (selectedYearFilter) => {
+  let sem;
+  const currentMonth = new Date().getMonth() + 1;
+  if ([1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12].includes(currentMonth)) {
+    if (selectedYearFilter.value === 1) sem = 1;
+    else if (selectedYearFilter.value === 2) sem = 3;
+    else sem = 5;
+  } else {
+    if (selectedYearFilter.value === 1) sem = 2;
+    else if (selectedYearFilter.value === 2) sem = 4;
+    else sem = 6;
+  }
+  sem = sem + "";
+  return sem;
+};

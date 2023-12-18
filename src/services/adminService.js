@@ -28,6 +28,14 @@ const deleteAdmin = (id) => {
   return http.delete(`/admin/${id}`);
 };
 
+const resetPassword = (data) => {
+  return http.post("/admin/reset-password", data);
+};
+
+const sendMailReminder = (data) => {
+  return http.post("/admin/send-mail-reminder", data);
+};
+
 const adminService = {
   getAllAdmin,
   getAdmin,
@@ -36,6 +44,8 @@ const adminService = {
   createAdmin,
   updateAdmin,
   deleteAdmin,
+  resetPassword,
+  sendMailReminder,
 };
 
 export default adminService;

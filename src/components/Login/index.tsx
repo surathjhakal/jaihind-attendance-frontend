@@ -183,9 +183,9 @@ const Login = (props: Props) => {
             LOGIN
           </Button>
         </Form>
-        {/* <Link to="/login/forgotPassword" className="loginForgotPasswordButton">
-          Forgot password?
-        </Link> */}
+        <Link to="/login/forgotPassword" className="loginForgotPasswordButton">
+          Reset password?
+        </Link>
       </div>
     </div>
   );

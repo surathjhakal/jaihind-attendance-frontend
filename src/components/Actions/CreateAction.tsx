@@ -3,16 +3,11 @@ import { Button, Col, Form, Modal, Row, Spinner } from "react-bootstrap";
 import "@/css/Actions.css";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
-import teacherService from "@/services/teacherService";
 import HeaderContext from "@/context/HeaderContext";
 import {
-  getFilterOptions,
   semFilterOptions,
   yearFilterOptions,
 } from "@/utilities/autoCompleteOptions";
-import departmentService from "@/services/departmentService";
-import courseService from "@/services/courseService";
-import subjectService from "@/services/subjectService";
 import { toast } from "react-toastify";
 
 const CreateAction = ({
@@ -22,18 +17,12 @@ const CreateAction = ({
   type,
   fields,
   loading,
+  teachersData,
+  departmentsData,
+  coursesData,
+  subjectsData,
 }: any) => {
-  const {
-    userData,
-    teachersData,
-    setTeachersData,
-    departmentsData,
-    setDepartmentsData,
-    coursesData,
-    setCoursesData,
-    subjectsData,
-    setSubjectsData,
-  }: any = useContext(HeaderContext);
+  const { userData }: any = useContext(HeaderContext);
   const navigate = useNavigate();
   const [createData, setCreateData]: any = useState({});
 
@@ -41,63 +30,17 @@ const CreateAction = ({
 
   const getOptionsList = (value: string) => {
     if (value === "department") {
-      if (departmentsData) {
-        return getFilterOptions(departmentsData);
-      } else {
-        departmentService.getAllDepartments().then((res) => {
-          console.log(res.data);
-          if (res.data) {
-            setDepartmentsData(res.data);
-            return getFilterOptions(res.data);
-          }
-        });
-      }
+      return departmentsData;
     } else if (value === "course") {
-      if (coursesData) {
-        return getFilterOptions(coursesData);
-      } else {
-        courseService
-          .getAllCourses({ filter: { departmentID: userData.departmentID } })
-          .then((res) => {
-            console.log(res.data);
-            if (res.data) {
-              setCoursesData(res.data);
-              return getFilterOptions(res.data);
-            }
-          });
-      }
+      return coursesData;
     } else if (value === "year") {
       return yearFilterOptions;
     } else if (value === "sem") {
       return semFilterOptions;
     } else if (value === "teacher") {
-      if (teachersData) {
-        return getFilterOptions(teachersData);
-      } else {
-        teacherService
-          .getAllTeacher({ filter: { departmentID: userData.departmentID } })
-          .then((res) => {
-            console.log(res.data);
-            if (res.data) {
-              setTeachersData(res.data);
-              return getFilterOptions(res.data);
-            }
-          });
-      }
+      return teachersData;
     } else if (value === "subject") {
-      if (subjectsData) {
-        return getFilterOptions(subjectsData);
-      } else {
-        subjectService
-          .getAllSubjects({ filter: { departmentID: userData.departmentID } })
-          .then((res) => {
-            console.log(res.data);
-            if (res.data) {
-              setSubjectsData(res.data);
-              return getFilterOptions(res.data);
-            }
-          });
-      }
+      return subjectsData;
     }
   };
 

@@ -397,6 +397,8 @@ const Subject = () => {
           showModal={showModal}
           type="subject"
           fields={subjectFields}
+          coursesData={courseFilterOptions}
+          teachersData={teacherFilterOptions}
           loading={loading}
         />
       )}
@@ -407,6 +409,8 @@ const Subject = () => {
           showModal={showModal}
           type="subject"
           fields={subjectFields}
+          coursesData={courseFilterOptions}
+          teachersData={teacherFilterOptions}
           disabled={true}
         />
       )}
@@ -418,6 +422,8 @@ const Subject = () => {
           showModal={showModal}
           type="subject"
           fields={subjectFields}
+          coursesData={courseFilterOptions}
+          teachersData={teacherFilterOptions}
           loading={loading}
         />
       )}

@@ -58,3 +58,12 @@ export const getOverallAttendancePrecentage = (attendanceData, studentUID) => {
     </h2>
   );
 };
+
+export const getExcelAttendanceData = (lectures, studentUID) => {
+  const presentCount = lectures.filter((lecture) =>
+    lecture.studentPresentIDs.includes(studentUID)
+  ).length;
+  const totalCount = lectures.length;
+  const percentage = Math.round((presentCount / totalCount) * 100).toFixed(2);
+  return { presentCount, totalCount, percentage };
+};
