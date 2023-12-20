@@ -25,6 +25,7 @@ import fileService from "./services/fileService";
 import AttendanceDashboard from "./components/AttendanceDashboard";
 import ExportToExcel from "./components/ExportToExcel";
 import AttendanceMailReminder from "./components/AttendanceMailReminder";
+import Donate from "./components/Donate";
 
 function App() {
   const { userData, setUserData, setLoadingModal, setProfilePhoto }: any =
@@ -72,6 +73,7 @@ function App() {
       <ToastContainer />
       <LoadingModal />
       <Routes>
+        <Route path="/donate" element={<Donate />} />
         {!userData ? (
           <>
             <Route path="/" element={<AttendanceDashboard />} />

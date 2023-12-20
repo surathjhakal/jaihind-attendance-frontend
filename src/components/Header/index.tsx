@@ -42,36 +42,61 @@ const Header = () => {
             Jaihind College
           </Navbar.Brand>
         </Link>
-        {!userData && location.pathname === "/" && (
-          <Nav className="ml-auto headerNavLink">
-            <Link to="/login">
-              <Button
-                style={{
-                  background: "cadetblue",
-                  outline: "none",
-                  border: "none",
-                }}
-              >
-                Login
-              </Button>
-            </Link>
-          </Nav>
-        )}
-        {!userData && location.pathname === "/login" && (
-          <Nav className="ml-auto headerNavLink">
-            <Link to="/">
-              <Button
-                style={{
-                  background: "cadetblue",
-                  outline: "none",
-                  border: "none",
-                }}
-              >
-                Check Attendance
-              </Button>
-            </Link>
-          </Nav>
-        )}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          {!userData && location.pathname === "/" && (
+            <Nav className="ml-auto headerNavLink">
+              <Link to="/donate">
+                <Button
+                  style={{
+                    outline: "none",
+                    border: "none",
+                    borderRadius: "1rem",
+                    display: "flex",
+                    justifyContent: "center",
+                  }}
+                  variant="light"
+                >
+                  <img
+                    alt=""
+                    src="/coffee.jpg"
+                    className="d-inline-block align-top"
+                    style={{ height: 20, width: 20, cursor: "pointer" }}
+                  />
+                </Button>
+              </Link>
+            </Nav>
+          )}
+          {!userData && location.pathname === "/" && (
+            <Nav className="ml-auto headerNavLink">
+              <Link to="/login">
+                <Button
+                  style={{
+                    background: "cadetblue",
+                    outline: "none",
+                    border: "none",
+                  }}
+                >
+                  Login
+                </Button>
+              </Link>
+            </Nav>
+          )}
+          {!userData && location.pathname === "/login" && (
+            <Nav className="ml-auto headerNavLink">
+              <Link to="/">
+                <Button
+                  style={{
+                    background: "cadetblue",
+                    outline: "none",
+                    border: "none",
+                  }}
+                >
+                  Check Attendance
+                </Button>
+              </Link>
+            </Nav>
+          )}
+        </div>
         {userData && (
           <Nav className="ml-auto headerNavLink">
             <Link to="/profile">
