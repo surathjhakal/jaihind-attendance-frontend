@@ -32,6 +32,22 @@ const getAttendance = (data) => {
   return http.post("/student/get-attendance", data);
 };
 
+const markQrAttendance = (data) => {
+  return http.post("/student/mark-qr-attendance", data);
+};
+
+const markFingerprintAttendance = (data) => {
+  return http.post("/student/mark-fingerprint-attendance", data);
+};
+
+const studentLogin = (data) => {
+  return http.post("/student/login", data);
+};
+
+const studentLogout = (id) => {
+  return http.post(`/student/logout/${id}`);
+};
+
 const studentService = {
   getAllStudent,
   getStudent,
@@ -41,6 +57,10 @@ const studentService = {
   sendEmail,
   getAttendance,
   getStudentByUID,
+  studentLogin,
+  studentLogout,
+  markQrAttendance,
+  markFingerprintAttendance,
 };
 
 export default studentService;

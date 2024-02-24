@@ -43,6 +43,11 @@ const CreateLecture = ({
   const [subjectOptions, setSubjectOptions]: any =
     useState(subjectFilterOptions);
 
+  const [attendanceType, setAttendanceType] = useState({
+    label: "Manual",
+    value: "Manual",
+  });
+
   useEffect(() => {
     if (createData.course && createData.year) {
       setStudentsLoading(true);
@@ -82,6 +87,15 @@ const CreateLecture = ({
     }
   }, [createData.course, createData.year]);
 
+  const filterTeacherSubject = (subjectOptions: any) => {
+    const filteredSubjects = subjectOptions.filter((subject: any) => {
+      if (!createData.teacher?.value?.id) return subject;
+      if (subject.value.teacherIDs.includes(createData.teacher?.value?.id))
+        return subject;
+    });
+    return filteredSubjects;
+  };
+
   const handleOnChange = (type: any, obj: any) => {
     if (type === "year" || type === "course") {
       setCreateData({
@@ -102,7 +116,7 @@ const CreateLecture = ({
       if (userData.role !== "Admin" && key === "teacher") return;
       if (createData[key] === "" || !createData[key]) checkInput = true;
     });
-    if (allStudents.length !== 0) checkInput = true;
+    // if (allStudents.length !== 0) checkInput = true;
     return checkInput;
   };
 
@@ -146,6 +160,26 @@ const CreateLecture = ({
         });
       }
     }
+  };
+
+  const filterStudents = (students: any) => {
+    console.log(students);
+    if (createData?.subject?.value?.batches) {
+      if (userData.role === "Teacher") {
+        const tempStudents = students.filter((student: any) =>
+          createData?.subject?.value?.batches[userData.id]?.includes(student.id)
+        );
+        return tempStudents;
+      } else {
+        const tempStudents = students.filter((student: any) =>
+          createData?.subject?.value?.batches[
+            createData.teacher?.value?.id
+          ]?.includes(student.id)
+        );
+        return tempStudents;
+      }
+    }
+    return students;
   };
 
   return (
@@ -213,7 +247,7 @@ const CreateLecture = ({
               <Select
                 defaultValue={{ value: "Default", label: "Select" }}
                 onChange={(obj) => handleOnChange("subject", obj)}
-                options={subjectOptions}
+                options={filterTeacherSubject(subjectOptions)}
                 value={createData.subject}
               />
             </Col>
@@ -237,12 +271,30 @@ const CreateLecture = ({
             </Col>
           </Form.Group>
 
+          <Form.Group as={Row} className="mb-3" controlId={`formHorizontal4`}>
+            <Form.Label column sm={2} style={{ textTransform: "capitalize" }}>
+              Method
+            </Form.Label>
+            <Col>
+              <Select
+                defaultValue={{ value: "Manual", label: "Manual" }}
+                onChange={(obj: any) => setAttendanceType(obj)}
+                options={[
+                  { value: "Manual", label: "Manual" },
+                  { value: "QRCode", label: "QRCode" },
+                  { value: "Fingerprint", label: "Fingerprint" },
+                ]}
+                value={attendanceType}
+              />
+            </Col>
+          </Form.Group>
+
           {createData.course && createData.year && (
             <StudentAttendance
               studentsPresent={createData.studentsPresent}
               studentsAbsent={createData.studentsAbsent}
               handleOnChangeStudentsStatus={handleOnChangeStudentsStatus}
-              allStudents={allStudents}
+              allStudents={filterStudents(allStudents)}
               setAllStudents={setAllStudents}
               studentsLoading={studentsLoading}
             />
@@ -253,7 +305,13 @@ const CreateLecture = ({
         <Button
           variant="success"
           disabled={loading || checkAllInput()}
-          onClick={() => handleOnCreate(createData)}
+          onClick={() =>
+            handleOnCreate(
+              createData,
+              attendanceType,
+              filterStudents(allStudents)
+            )
+          }
           style={{ display: "flex", alignItems: "center", gap: "8px" }}
         >
           Create{" "}

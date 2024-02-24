@@ -1,15 +1,19 @@
-export const checkPresentStatus = (presentStudents, studentUID) => {
-  if (presentStudents.includes(studentUID)) {
+export const checkPresentStatus = (presentStudents, studentID) => {
+  if (presentStudents.includes(studentID)) {
     return <td className="studentPresent">Present</td>;
   }
   return <td className="studentAbsent">Absent</td>;
 };
 
-export const getSubjectAttendancePresent = (lectures, studentUID) => {
+export const getSubjectAttendancePresent = (lectures, studentID) => {
   const presentCount = lectures.filter((lecture) =>
-    lecture.studentPresentIDs.includes(studentUID)
+    lecture.studentPresentIDs.includes(studentID)
   ).length;
-  const totalCount = lectures.length;
+  const totalCount = lectures.filter(
+    (lecture) =>
+      lecture.studentPresentIDs.includes(studentID) ||
+      lecture.studentAbsentIDs.includes(studentID)
+  ).length;
   const percentage = Math.round((presentCount / totalCount) * 100).toFixed(2);
   let tempPercentage = percentage;
   let count = 0;
@@ -35,15 +39,19 @@ export const getSubjectAttendancePresent = (lectures, studentUID) => {
   );
 };
 
-export const getOverallAttendancePrecentage = (attendanceData, studentUID) => {
+export const getOverallAttendancePrecentage = (attendanceData, studentID) => {
   if (attendanceData.length === 0) return;
   let totalCount = 0;
   let presentCount = 0;
   attendanceData.forEach((item) => {
     presentCount += item.lectures.filter((lecture) =>
-      lecture.studentPresentIDs.includes(studentUID)
+      lecture.studentPresentIDs.includes(studentID)
     ).length;
-    totalCount += item.lectures.length;
+    totalCount += item.lectures.filter(
+      (lecture) =>
+        lecture.studentPresentIDs.includes(studentID) ||
+        lecture.studentAbsentIDs.includes(studentID)
+    ).length;
   });
   const percentage = Math.round((presentCount / totalCount) * 100).toFixed(2);
   return (
@@ -59,11 +67,15 @@ export const getOverallAttendancePrecentage = (attendanceData, studentUID) => {
   );
 };
 
-export const getExcelAttendanceData = (lectures, studentUID) => {
+export const getExcelAttendanceData = (lectures, studentID) => {
   const presentCount = lectures.filter((lecture) =>
-    lecture.studentPresentIDs.includes(studentUID)
+    lecture.studentPresentIDs.includes(studentID)
   ).length;
-  const totalCount = lectures.length;
+  const totalCount = lectures.filter(
+    (lecture) =>
+      lecture.studentPresentIDs.includes(studentID) ||
+      lecture.studentAbsentIDs.includes(studentID)
+  ).length;
   const percentage = Math.round((presentCount / totalCount) * 100).toFixed(2);
   return { presentCount, totalCount, percentage };
 };

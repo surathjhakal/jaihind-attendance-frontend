@@ -6,6 +6,9 @@ import adminService from "@/services/adminService";
 import { useContext } from "react";
 import HeaderContext from "@/context/HeaderContext";
 import teacherService from "@/services/teacherService";
+import { PiStudent } from "react-icons/pi";
+import { FaChalkboardTeacher } from "react-icons/fa";
+import studentService from "@/services/studentService";
 
 type Props = {
   userData: object;
@@ -19,8 +22,11 @@ const Header = () => {
     if (userData.role === "Admin") {
       adminService.adminLogout(userData.id);
       setUserData(null);
-    } else {
+    } else if (userData.role === "Teacher") {
       teacherService.teacherLogout(userData.id);
+      setUserData(null);
+    } else {
+      studentService.studentLogout(userData.id);
       setUserData(null);
     }
   };
@@ -76,7 +82,7 @@ const Header = () => {
                     border: "none",
                   }}
                 >
-                  Login
+                  <FaChalkboardTeacher />
                 </Button>
               </Link>
             </Nav>
@@ -91,7 +97,7 @@ const Header = () => {
                     border: "none",
                   }}
                 >
-                  Check Attendance
+                  <PiStudent />
                 </Button>
               </Link>
             </Nav>
@@ -99,16 +105,18 @@ const Header = () => {
         </div>
         {userData && (
           <Nav className="ml-auto headerNavLink">
-            <Link to="/profile">
-              <img
-                src={
-                  profilePhoto ||
-                  "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
-                }
-                alt=""
-                className="headerProfile"
-              />
-            </Link>
+            {userData.role !== "Student" && (
+              <Link to="/profile">
+                <img
+                  src={
+                    profilePhoto ||
+                    "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png"
+                  }
+                  alt=""
+                  className="headerProfile"
+                />
+              </Link>
+            )}
             <FiLogOut className="headerLogout" onClick={handleOnLogout} />
           </Nav>
         )}

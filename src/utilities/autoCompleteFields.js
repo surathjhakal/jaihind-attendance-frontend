@@ -8,6 +8,14 @@ export const studentFields = [
     value: "name",
   },
   {
+    type: "text",
+    value: "roll",
+  },
+  {
+    type: "text",
+    value: "major",
+  },
+  {
     type: "email",
     value: "email",
   },
@@ -56,6 +64,7 @@ export const subjectFields = [
   {
     type: "dropdown",
     value: "teacher",
+    isMulti: true,
   },
   {
     type: "dropdown",

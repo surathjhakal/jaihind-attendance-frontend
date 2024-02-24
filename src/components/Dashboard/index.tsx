@@ -114,6 +114,18 @@ const Dashboard = (props: Props) => {
                 <RxActivityLog />
               </div>
             </Link>
+            <Link to="export">
+              <div className="dashboardBox">
+                Export to Excel
+                <SiMicrosoftexcel />
+              </div>
+            </Link>
+            <Link to="attendance-mail-reminder">
+              <div className="dashboardBox">
+                Send Mail Reminder
+                <MdOutgoingMail />
+              </div>
+            </Link>
           </>
         )}
       </div>

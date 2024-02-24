@@ -9,24 +9,30 @@ export const getSubjectExportData = (studentsData, attendanceData) => {
     let presentCount = 0,
       totalCount = 0;
     attendanceData.lectures.forEach((lecture) => {
-      const date = new Date(lecture.time).toLocaleDateString("en-GB");
+      let date = new Date(lecture.time);
+      date = date.toLocaleDateString() + "-" + date.toLocaleTimeString();
 
       if (lecture.studentPresentIDs.includes(student.id)) {
         row[[date]] = "Present";
-        presentCount += 1;
-      } else {
+        totalCount++;
+        presentCount++;
+      } else if (lecture.studentAbsentIDs.includes(student.id)) {
         row[[date]] = "Absent";
+        totalCount++;
+      } else {
+        row[[date]] = "NAN";
       }
-      totalCount += 1;
     });
     const per = Math.round((presentCount / totalCount) * 100).toFixed(2);
     row["Total"] = `(${presentCount}/${totalCount})=${per}%`;
+    row.mark = per >= 75 ? true : false;
     data.push(row);
   });
   return data;
 };
 
 export const getAllSubjectsExportData = (studentsData, attendanceData) => {
+  console.log(attendanceData);
   let data = [];
   studentsData.forEach((student) => {
     const row = {};
@@ -47,6 +53,7 @@ export const getAllSubjectsExportData = (studentsData, attendanceData) => {
     });
     const per = Math.round((pC / tC) * 100).toFixed(2);
     row.Total = `(${pC}/${tC})=${per}%`;
+    row.mark = per >= 75 ? true : false;
     data.push(row);
   });
   return data;

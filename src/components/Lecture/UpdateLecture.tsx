@@ -204,6 +204,16 @@ const UpdateLecture = ({
     }
   };
 
+  const filterStudents = (students: any) => {
+    if (updateData?.subject?.value?.batches) {
+      const tempStudents = students.filter((student: any) =>
+        updateData?.subject?.value?.batches[userData.id]?.includes(student.id)
+      );
+      return tempStudents;
+    }
+    return students;
+  };
+
   return (
     <Modal
       show={showModal}
@@ -305,7 +315,7 @@ const UpdateLecture = ({
               studentsPresent={updateData.studentsPresent}
               studentsAbsent={updateData.studentsAbsent}
               handleOnChangeStudentsStatus={handleOnChangeStudentsStatus}
-              allStudents={allStudents}
+              allStudents={filterStudents(allStudents)}
               setAllStudents={setAllStudents}
               isDisabled={disabled}
               studentsLoading={studentsLoading}

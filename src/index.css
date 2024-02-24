@@ -16,3 +16,11 @@ code {
 ::-webkit-scrollbar {
   display: none;
 }
+
+.accordian-complete > button {
+  background: #70c370 !important;
+}
+
+.accordian-pending > button {
+  background: #eec579 !important;
+}

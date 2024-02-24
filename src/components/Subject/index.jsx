@@ -20,6 +20,8 @@ import UpdateAction from "../Actions/UpdateAction";
 import { v4 as uuidv4 } from "uuid";
 import actionLogService from "@/services/actionLogService";
 import { sortData } from "@/utilities/usefulFunctions";
+import Syllabus from "@/components/Syllabus";
+import syllabusService from "@/services/syllabusService";
 
 const Subject = () => {
   const { userData, setLoadingModal, setCoursesData, setTeachersData } =
@@ -165,18 +167,28 @@ const Subject = () => {
   const handleOnCreate = (createData) => {
     setLoading(true);
     const courseID = createData.course.value.id;
-    const teacherID =
-      userData.role === "Admin" ? createData.teacher.value.id : userData.id;
+    const teacherIDs = createData.teacher.map((teacher) => teacher.value.id);
     const year = createData.year.value;
     const sem = createData.sem.value;
+    let batches = {};
+    if (createData.batches) {
+      Object.keys(createData.batches).forEach((key) => (batches[key] = null));
+      Object.keys(createData.batches).forEach(
+        (key) =>
+          (batches[key] = createData.batches[key].map((student) => student.id))
+      );
+    } else {
+      batches = null;
+    }
 
     const subjectObj = {
       id: uuidv4(),
       name: createData.name,
-      teacherID: teacherID,
+      teacherIDs: teacherIDs,
       courseID: courseID,
       year: year,
       sem: sem,
+      batches: batches,
       departmentID: userData.departmentID,
       creation_date: new Date().toISOString(),
     };
@@ -214,15 +226,25 @@ const Subject = () => {
     console.log(updateData);
     setLoading(true);
     const courseID = updateData.course.value.id;
-    const teacherID =
-      userData.role === "Admin" ? updateData.teacher.value.id : userData.id;
+    const teacherIDs = updateData.teacher.map((teacher) => teacher.value.id);
     const year = updateData.year.value;
     const sem = updateData.sem.value;
+    let batches = {};
+    if (updateData.batches) {
+      Object.keys(updateData.batches).forEach((key) => (batches[key] = null));
+      Object.keys(updateData.batches).forEach(
+        (key) =>
+          (batches[key] = updateData.batches[key].map((student) => student.id))
+      );
+    } else {
+      batches = null;
+    }
 
     const subjectObj = {
       id: selectedItem.id,
       name: updateData.name,
-      teacherFields: teacherID,
+      teacherIDs: teacherIDs,
+      batches: batches,
       courseID: courseID,
       year: year,
       sem: sem,
@@ -262,7 +284,7 @@ const Subject = () => {
           : item.courseID === selectedCourseFilter.value.id) &&
         (selectedTeacherFilter.label === "All"
           ? true
-          : item.teacherID === selectedTeacherFilter.value.id) &&
+          : item.teacherIDs.includes(selectedTeacherFilter.value.id)) &&
         (selectedYearFilter.label === "All"
           ? true
           : item.year === selectedYearFilter.value) &&
@@ -272,25 +294,105 @@ const Subject = () => {
     );
   };
 
-  const getTeacherName = (id) => {
-    if (id === userData.id) {
+  const getTeacherName = (ids) => {
+    if (ids.includes(userData.id)) {
       return userData.name;
     }
-    const subject = teacherFilterOptions.find((subj) => subj.value.id === id);
-    return subject?.value?.name;
+    const teachers = teacherFilterOptions.filter((teacher) =>
+      ids.includes(teacher.value.id)
+    );
+    let teachersName = "";
+    teachers.forEach((teacher) => {
+      teachersName = teachersName + "," + teacher.value.name;
+    });
+    return teachersName.slice(1);
+  };
+
+  const handleOnUpdateSyllabus = (syllabusList) => {
+    setLoading(true);
+    const syllabusUpdateList = syllabusList
+      .filter((item) => item.id)
+      .map((item) => {
+        return {
+          id: item.id,
+          data: {
+            name: item.name,
+            tasks: item.tasks,
+            teacherID: item.teacherID,
+            subjectID: item.subjectID,
+            departmentID: item.departmentID,
+            creation_date: item.creation_date,
+          },
+        };
+      });
+    const syllabusCreateList = syllabusList
+      .filter((item) => !item.id)
+      .map((item) => {
+        return {
+          id: uuidv4(),
+          data: {
+            name: item.name,
+            tasks: item.tasks,
+            teacherID: userData.id,
+            subjectID: selectedItem.id,
+            departmentID: userData.departmentID,
+            creation_date: new Date().toISOString(),
+          },
+        };
+      });
+    let checkUpdate = {
+      create: false,
+      update: false,
+    };
+    console.log(syllabusCreateList);
+    console.log(syllabusUpdateList);
+    if (syllabusCreateList.length > 0) {
+      syllabusService.createSyllabus(syllabusCreateList).then((res) => {
+        if (res.data) {
+          checkUpdate.create = true;
+          if (checkUpdate.update) {
+            setLoading(false);
+            setShowModal(false);
+            toast.success("Syllabus Updated!", {
+              position: toast.POSITION.BOTTOM_RIGHT,
+            });
+          }
+        }
+      });
+    } else {
+      checkUpdate.create = true;
+    }
+    if (syllabusUpdateList.length > 0) {
+      syllabusService.updateSyllabus(syllabusUpdateList).then((res) => {
+        if (res.data) {
+          checkUpdate.update = true;
+          if (checkUpdate.create) {
+            setLoading(false);
+            setShowModal(false);
+            toast.success("Syllabus Updated!", {
+              position: toast.POSITION.BOTTOM_RIGHT,
+            });
+          }
+        }
+      });
+    } else {
+      checkUpdate.update = true;
+    }
   };
 
   return (
     <div className="dashboardServicesContainer">
       <div className="dashboardHeadingSection1">
         <h3 className="dashboardHeading">Subject Section</h3>
-        <Button
-          variant="primary"
-          className="createButton"
-          onClick={() => handleShowModal("create", null)}
-        >
-          Create
-        </Button>
+        {userData.role == "Admin" && (
+          <Button
+            variant="primary"
+            className="createButton"
+            onClick={() => handleShowModal("create", null)}
+          >
+            Create
+          </Button>
+        )}
       </div>
       <div className="partitionLine"></div>
       <div className="dashboardHeadingSection2">
@@ -360,7 +462,7 @@ const Subject = () => {
             <tr>
               <td>{index + 1}</td>
               <td>{subjectDoc.name}</td>
-              <td>{getTeacherName(subjectDoc.teacherID)}</td>
+              <td>{getTeacherName(subjectDoc.teacherIDs)}</td>
               <td>{subjectDoc.year}</td>
               <td>{subjectDoc.sem}</td>
               <td className="actionsButtons">
@@ -371,13 +473,24 @@ const Subject = () => {
                 >
                   View
                 </Button>
-                <Button
-                  variant="warning"
-                  className="updateButton"
-                  onClick={() => handleShowModal("update", subjectDoc)}
-                >
-                  Update
-                </Button>
+                {userData.role == "Admin" && (
+                  <Button
+                    variant="warning"
+                    className="updateButton"
+                    onClick={() => handleShowModal("update", subjectDoc)}
+                  >
+                    Update
+                  </Button>
+                )}
+                {userData.role === "Teacher" && (
+                  <Button
+                    variant="primary"
+                    onClick={() => handleShowModal("syllabus", subjectDoc)}
+                  >
+                    Syllabus
+                  </Button>
+                )}
+
                 <Button
                   variant="danger"
                   className="deleteButton"
@@ -434,6 +547,15 @@ const Subject = () => {
           handleOnDelete={handleOnDelete}
           showModal={true}
           type="subject"
+          loading={loading}
+        />
+      )}
+      {showModal === "syllabus" && (
+        <Syllabus
+          handleCloseModal={handleCloseModal}
+          selectedItem={selectedItem}
+          handleOnUpdate={handleOnUpdateSyllabus}
+          showModal={true}
           loading={loading}
         />
       )}

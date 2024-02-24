@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { GiHand } from "react-icons/gi";
 import { BsTable } from "react-icons/bs";
 import { Accordion, Button, Col, Form, Row, Table } from "react-bootstrap";
@@ -15,71 +15,41 @@ import {
   formatTodayDate,
   sortLectureData,
 } from "@/utilities/usefulFunctions";
+import ScanCode from "../ScanCode";
+import { IoReload } from "react-icons/io5";
 
 const AttendanceDashboard = () => {
-  const { setLoadingModal } = useContext(HeaderContext);
-  const [userUID, setUserUID] = useState("");
+  const { setLoadingModal, userData, setLoadingMessage } =
+    useContext(HeaderContext);
   const [attendanceData, setAttendanceData] = useState(null);
-  const [studentData, setStudentData] = useState(null);
+  const [studentData, setStudentData] = useState(userData);
+  const [attendanceScanner, setAttendanceScanner] = useState(null);
 
-  const handleOnInputChange = (e) => {
-    console.log(e);
-    setUserUID(e.target.value);
-  };
   const getStudentAttendance = () => {
-    if (userUID === "") {
-      toast.error("UID can't be empty !", {
-        position: toast.POSITION.BOTTOM_RIGHT,
-      });
-      return;
-    }
-    if (userUID.length < 6) {
-      toast.error("UID length should be more than 6 !", {
-        position: toast.POSITION.BOTTOM_RIGHT,
-      });
-      return;
-    }
     setLoadingModal(true);
+
+    let sem;
+    const currentMonth = new Date().getMonth() + 1;
+    if ([1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12].includes(currentMonth)) {
+      if (userData.year === 1) sem = 1;
+      else if (userData.year === 2) sem = 3;
+      else sem = 5;
+    } else {
+      if (userData.year === 1) sem = 2;
+      else if (userData.year === 2) sem = 4;
+      else sem = 6;
+    }
+    sem = sem + "";
     studentService
-      .getStudentByUID(userUID)
+      .getAttendance({
+        courseID: userData.courseID,
+        sem: sem,
+        studentID: userData.id,
+      })
       .then((res) => {
+        setAttendanceData(res.data);
         console.log(res);
-        if (res.data?.length > 0) {
-          setStudentData(res.data[0]);
-          const selectedStudent = res.data[0];
-          let sem;
-          const currentMonth = new Date().getMonth() + 1;
-          if ([1, 2, 3, 4, 6, 7, 8, 9, 10, 11, 12].includes(currentMonth)) {
-            if (selectedStudent.year === 1) sem = 1;
-            else if (selectedStudent.year === 2) sem = 3;
-            else sem = 5;
-          } else {
-            if (selectedStudent.year === 1) sem = 2;
-            else if (selectedStudent.year === 2) sem = 4;
-            else sem = 6;
-          }
-          sem = sem + "";
-          studentService
-            .getAttendance({ courseID: selectedStudent.courseID, sem: sem })
-            .then((res) => {
-              setAttendanceData(res.data);
-              console.log(res);
-              setLoadingModal(false);
-            })
-            .catch((err) => {
-              setLoadingModal(false);
-              console.log(err);
-              toast.error("Error Loading Attendance !", {
-                position: toast.POSITION.BOTTOM_RIGHT,
-              });
-            });
-        } else {
-          setLoadingModal(false);
-          toast.error("No student present with this UID !", {
-            position: toast.POSITION.BOTTOM_RIGHT,
-          });
-          return;
-        }
+        setLoadingModal(false);
       })
       .catch((err) => {
         setLoadingModal(false);
@@ -90,6 +60,44 @@ const AttendanceDashboard = () => {
       });
   };
 
+  useEffect(() => {
+    getStudentAttendance();
+  }, [userData]);
+
+  const handleScanData = (data) => {
+    setAttendanceScanner(false);
+    setLoadingModal(true);
+    try {
+      studentService
+        .markQrAttendance({
+          data: data,
+          studentID: userData.id,
+          captureTime: new Date().toISOString(),
+        })
+        .then((res) => {
+          console.log(res.data);
+          setLoadingModal(false);
+          setLoadingMessage("");
+          if (res.data.message === "Attendance Marked") {
+            toast.success(res.data.message, {
+              position: toast.POSITION.BOTTOM_RIGHT,
+            });
+          } else if (res.data.message === "Attendance Already Marked") {
+            toast.warning(res.data.message, {
+              position: toast.POSITION.BOTTOM_RIGHT,
+            });
+          } else {
+            toast.error(res.data.message, {
+              position: toast.POSITION.BOTTOM_RIGHT,
+            });
+          }
+        });
+    } catch (err) {
+      setLoadingModal(false);
+      console.log(err);
+    }
+  };
+
   return (
     <div className="dashboard">
       <h4 className="dashboardDate">{formatTodayDate()}</h4>
@@ -98,27 +106,20 @@ const AttendanceDashboard = () => {
         <GiHand className="dashboardHand" />
       </h1>
       <div className="partitionLine"></div>
-      <h3 className="dashboardHeading" style={{ fontSize: "1.4rem" }}>
-        Check Your Attendance <BsTable />{" "}
-      </h3>
+      <div style={{ display: "flex", justifyContent: "space-between" }}>
+        <h3 className="dashboardHeading" style={{ fontSize: "1.4rem" }}>
+          Check Your Attendance <BsTable />{" "}
+        </h3>
+        <Button onClick={() => setAttendanceScanner(true)}>Scan</Button>
+      </div>
       <div className="partitionLine"></div>
-      <Form.Group as={Row} className="mb-3" controlId={`formHorizontal3`}>
-        <Form.Label column sm={2} style={{ textTransform: "capitalize" }}>
-          Student UID :
-        </Form.Label>
-        <Col>
-          <Form.Control
-            type="text"
-            placeholder="Enter student UID"
-            onChange={handleOnInputChange}
-            value={userUID}
-          />
-        </Col>
-        <Col style={{ display: "flex" }}>
-          <Button onClick={getStudentAttendance}>Submit</Button>
-        </Col>
-      </Form.Group>
-      <div className="partitionLine"></div>
+      <Button
+        variant="secondary"
+        onClick={getStudentAttendance}
+        style={{ display: "flex", marginLeft: "auto" }}
+      >
+        <IoReload size={20} />
+      </Button>
       {attendanceData && (
         <>
           <div
@@ -128,6 +129,7 @@ const AttendanceDashboard = () => {
               <h2 className="studentDataInfo">Name:</h2>
               <h2 className="studentDataInfo">Email:</h2>
               <h2 className="studentDataInfo">Year:</h2>
+              <h2 className="studentDataInfo">UID:</h2>
             </div>
             <div
               style={{
@@ -139,6 +141,7 @@ const AttendanceDashboard = () => {
               <h2 className="studentDataInfo">{studentData.name}</h2>
               <h2 className="studentDataInfo">{studentData.email}</h2>
               <h2 className="studentDataInfo">{studentData.year}</h2>
+              <h2 className="studentDataInfo">{studentData.uid}</h2>
             </div>
           </div>
           {getOverallAttendancePrecentage(attendanceData, studentData.id)}
@@ -202,6 +205,12 @@ const AttendanceDashboard = () => {
             ))}
           </Accordion>
         </>
+      )}
+      {attendanceScanner && (
+        <ScanCode
+          handleCloseModal={() => setAttendanceScanner(false)}
+          handleScanData={handleScanData}
+        />
       )}
     </div>
   );

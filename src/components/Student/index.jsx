@@ -140,6 +140,8 @@ const Student = (props) => {
       email: createData.email,
       courseID: courseID,
       year: createData.year.value,
+      roll: createData.roll,
+      major: createData.major,
       departmentID: userData.departmentID,
       creation_date: new Date().toISOString(),
     };
@@ -183,6 +185,8 @@ const Student = (props) => {
       email: updateData.email,
       courseID: courseID,
       year: updateData.year.value,
+      roll: updateData.roll,
+      major: updateData.major,
       departmentID: selectedItem.departmentID,
       creation_date: selectedItem.creation_date,
     };

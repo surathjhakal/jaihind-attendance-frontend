@@ -26,6 +26,7 @@ import AttendanceDashboard from "./components/AttendanceDashboard";
 import ExportToExcel from "./components/ExportToExcel";
 import AttendanceMailReminder from "./components/AttendanceMailReminder";
 import Donate from "./components/Donate";
+import StudentLogin from "./components/Login/StudentLogin";
 
 function App() {
   const { userData, setUserData, setLoadingModal, setProfilePhoto }: any =
@@ -76,28 +77,36 @@ function App() {
         <Route path="/donate" element={<Donate />} />
         {!userData ? (
           <>
-            <Route path="/" element={<AttendanceDashboard />} />
+            <Route path="/" element={<StudentLogin />} />
             <Route path="/login" element={<Login />} />
             <Route path="/login/forgotPassword" element={<ForgotPassword />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </>
         ) : (
           <>
-            <Route path="/" element={<Dashboard />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/admin" element={<Admin />} />
-            <Route path="/student" element={<Student />} />
-            <Route path="/lecture" element={<Lecture />} />
-            <Route path="/course" element={<Course />} />
-            <Route path="/teacher" element={<Teacher />} />
-            <Route path="/subject" element={<Subject />} />
-            <Route path="/department" element={<Department />} />
-            <Route path="/activity" element={<Activity />} />
-            <Route path="/export" element={<ExportToExcel />} />
-            <Route
-              path="/attendance-mail-reminder"
-              element={<AttendanceMailReminder />}
-            />
+            {userData?.role === "Student" ? (
+              <>
+                <Route path="/" element={<AttendanceDashboard />} />
+              </>
+            ) : (
+              <>
+                <Route path="/" element={<Dashboard />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/admin" element={<Admin />} />
+                <Route path="/student" element={<Student />} />
+                <Route path="/lecture" element={<Lecture />} />
+                <Route path="/course" element={<Course />} />
+                <Route path="/teacher" element={<Teacher />} />
+                <Route path="/subject" element={<Subject />} />
+                <Route path="/department" element={<Department />} />
+                <Route path="/activity" element={<Activity />} />
+                <Route path="/export" element={<ExportToExcel />} />
+                <Route
+                  path="/attendance-mail-reminder"
+                  element={<AttendanceMailReminder />}
+                />
+              </>
+            )}
             <Route path="*" element={<Navigate to="/" />} />
           </>
         )}

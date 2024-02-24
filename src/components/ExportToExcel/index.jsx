@@ -138,6 +138,43 @@ const ExportToExcel = () => {
             const fileExtension = ".xlsx";
 
             const ws = XLSX.utils.json_to_sheet(excelData);
+            for (let rowIndex = 0; rowIndex < excelData.length; rowIndex++) {
+              console.log(rowIndex);
+              const row = excelData[rowIndex];
+
+              // Get the value of the cell that determines the condition (assuming it's in column A, adjust if different)
+              const conditionValue = row["mark"]; // Adjust 'A' to the actual column containing the condition
+
+              // Determine the background color based on the condition value
+              const bgColor = conditionValue ? "60D760" : "FC5E5E"; // Red for 0, Green for non-zero
+
+              // Apply style to each cell in the row
+              for (
+                let colIndex = 0;
+                colIndex < Object.keys(row).length;
+                colIndex++
+              ) {
+                const cellAddress = XLSX.utils.encode_cell({
+                  r: rowIndex + 1,
+                  c: colIndex,
+                });
+                const cell = ws[cellAddress];
+
+                // Apply your custom style
+                if (cell) {
+                  // Apply your custom style
+                  cell.s = {
+                    fill: {
+                      patternType: "solid",
+                      bgColor: { rgb: bgColor },
+                      fgColor: { rgb: bgColor },
+                    }, // Background color
+                    font: { color: { rgb: "FFFFFF" } },
+                    // Add more style properties as needed
+                  };
+                }
+              }
+            }
             const wb = { Sheets: { data: ws }, SheetNames: ["data"] };
             const excelBuffer = XLSX.write(wb, {
               bookType: "xlsx",

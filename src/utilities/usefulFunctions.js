@@ -27,6 +27,22 @@ export function sortData(obj1, obj2) {
   return dateB - dateA;
 }
 
+export function sortStudents(students) {
+  return students.sort((a, b) => {
+    const rollA = a.roll || Number.MAX_VALUE; // Provide a default value for undefined roll
+    const rollB = b.roll || Number.MAX_VALUE; // Provide a default value for undefined roll
+    return rollA - rollB;
+  });
+}
+
+export function sortSyllabus(syllabus) {
+  return syllabus.sort((a, b) => {
+    const orderA = a.order || Number.MAX_VALUE; // Provide a default value for undefined order
+    const orderB = b.order || Number.MAX_VALUE; // Provide a default value for undefined order
+    return orderA - orderB;
+  });
+}
+
 export function sortLectureData(obj1, obj2) {
   // Handle null values by moving them to the end of the sorted array
   const dateTimeA =

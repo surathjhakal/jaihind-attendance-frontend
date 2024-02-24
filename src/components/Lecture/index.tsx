@@ -26,6 +26,7 @@ import {
   sortData,
   sortLectureData,
 } from "@/utilities/usefulFunctions";
+import ORCode from "@/components/QRCode";
 
 type Props = {};
 
@@ -51,6 +52,7 @@ const Lecture = (props: Props) => {
     defaultFilter,
   ]);
   const [loading, setLoading] = useState(false);
+  const [qrData, setQrData]: any = useState(null);
 
   useEffect(() => {
     if (selectedCourseFilter && selectedYearFilter) {
@@ -177,7 +179,11 @@ const Lecture = (props: Props) => {
       });
   };
 
-  const handleOnCreate = (createData: any) => {
+  const handleOnCreate = (
+    createData: any,
+    attendanceType: any,
+    allStudents: any
+  ) => {
     setLoading(true);
     const courseID = createData.course.value.id;
     const teacherID =
@@ -188,9 +194,16 @@ const Lecture = (props: Props) => {
     const studentPresentIDs = createData.studentsPresent.map(
       (student: any) => student.id
     );
-    const studentAbsentIDs = createData.studentsAbsent.map(
+    let studentAbsentIDs = createData.studentsAbsent.map(
       (student: any) => student.id
     );
+
+    if (
+      attendanceType.value === "QRCode" ||
+      attendanceType.value === "Fingerprint"
+    ) {
+      studentAbsentIDs = allStudents.map((student: any) => student.id);
+    }
 
     const lectureObj = {
       id: uuidv4(),
@@ -205,39 +218,76 @@ const Lecture = (props: Props) => {
       creation_date: new Date().toISOString(),
     };
     console.log(lectureObj);
-    lectureService
-      .createLecture(lectureObj)
-      .then((res) => {
-        console.log(res);
-        if (
-          selectedCourseFilter?.value.id === courseID &&
-          selectedYearFilter.value === year
-        ) {
-          setLectureData([lectureObj, ...lectureData]);
-        }
-        setLoading(false);
-        setShowModal(false);
-        toast.success("Lecture Created!", {
-          position: toast.POSITION.BOTTOM_RIGHT,
+    if (attendanceType.value === "QRCode") {
+      lectureService
+        .createLectureQRCode(lectureObj)
+        .then((res: any) => {
+          console.log(res);
+          if (
+            selectedCourseFilter?.value.id === courseID &&
+            selectedYearFilter.value === year
+          ) {
+            setLectureData([lectureObj, ...lectureData]);
+          }
+          setLoading(false);
+          setShowModal("QRCode");
+          setQrData(res.data);
+          toast.success("Lecture Created!", {
+            position: toast.POSITION.BOTTOM_RIGHT,
+          });
+          actionLogService.createActionLog({
+            id: uuidv4(),
+            message: `${userData.name} created lecture ${createData.subject.value.name}`,
+            actionType: "lecture",
+            actionID: lectureObj.id,
+            userID: userData.id,
+            departmentID: userData.departmentID,
+            creation_date: new Date().toISOString(),
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+          setShowModal(false);
+          toast.error("Error Occured !", {
+            position: toast.POSITION.BOTTOM_RIGHT,
+          });
         });
-        actionLogService.createActionLog({
-          id: uuidv4(),
-          message: `${userData.name} created lecture ${createData.subject.value.name}`,
-          actionType: "lecture",
-          actionID: lectureObj.id,
-          userID: userData.id,
-          departmentID: userData.departmentID,
-          creation_date: new Date().toISOString(),
+    } else {
+      lectureService
+        .createLecture(lectureObj)
+        .then((res) => {
+          console.log(res);
+          if (
+            selectedCourseFilter?.value.id === courseID &&
+            selectedYearFilter.value === year
+          ) {
+            setLectureData([lectureObj, ...lectureData]);
+          }
+          setLoading(false);
+          setShowModal(false);
+          toast.success("Lecture Created!", {
+            position: toast.POSITION.BOTTOM_RIGHT,
+          });
+          actionLogService.createActionLog({
+            id: uuidv4(),
+            message: `${userData.name} created lecture ${createData.subject.value.name}`,
+            actionType: "lecture",
+            actionID: lectureObj.id,
+            userID: userData.id,
+            departmentID: userData.departmentID,
+            creation_date: new Date().toISOString(),
+          });
+        })
+        .catch((error) => {
+          console.log(error);
+          setLoading(false);
+          setShowModal(false);
+          toast.error("Error Occured !", {
+            position: toast.POSITION.BOTTOM_RIGHT,
+          });
         });
-      })
-      .catch((error) => {
-        console.log(error);
-        setLoading(false);
-        setShowModal(false);
-        toast.error("Error Occured !", {
-          position: toast.POSITION.BOTTOM_RIGHT,
-        });
-      });
+    }
   };
 
   const handleOnUpdate = (updateData: any) => {
@@ -497,6 +547,13 @@ const Lecture = (props: Props) => {
           type="lecture"
           loading={loading}
           subjectName={getSubjectName(selectedItem?.subjectID)}
+        />
+      )}
+      {showModal === "QRCode" && qrData && (
+        <ORCode
+          handleCloseModal={handleCloseModal}
+          qrList={qrData?.qrList}
+          final_expire={qrData?.final_expire}
         />
       )}
     </div>

@@ -1,5 +1,13 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Button, Col, Form, Modal, Row, Spinner } from "react-bootstrap";
+import {
+  Accordion,
+  Button,
+  Col,
+  Form,
+  Modal,
+  Row,
+  Spinner,
+} from "react-bootstrap";
 import "@/css/Actions.css";
 import Select from "react-select";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -15,6 +23,8 @@ import courseService from "@/services/courseService";
 import teacherService from "@/services/teacherService";
 import subjectService from "@/services/subjectService";
 import { toast } from "react-toastify";
+import studentService from "@/services/studentService";
+import { sortStudents } from "@/utilities/usefulFunctions";
 
 const UpdateAction = ({
   handleCloseModal,
@@ -32,6 +42,7 @@ const UpdateAction = ({
 }) => {
   const { userData } = useContext(HeaderContext);
   const [updateData, setUpdateData] = useState({});
+  const [studentsInfo, setStudentsInfo] = useState(null);
 
   const getOptionsList = (value) => {
     if (value === "department") {
@@ -58,7 +69,7 @@ const UpdateAction = ({
 
   const getID = (value) => {
     if (value === "department") return selectedItem.departmentID;
-    else if (value === "teacher") return selectedItem.teacherID;
+    else if (value === "teacher") return selectedItem.teacherIDs;
     else if (value === "subject") return selectedItem.subjectID;
     else if (value === "course")
       return selectedItem.courseID || selectedItem.courseIDs;
@@ -84,6 +95,10 @@ const UpdateAction = ({
               ? getOptionsList(field.value).filter((option) =>
                   getID(field.value).includes(option.value.id)
                 )
+              : field.value === "teacher" && type === "subject"
+              ? getOptionsList(field.value).filter((option) =>
+                  getID(field.value).includes(option.value.id)
+                )
               : getOptionsList(field.value).find(
                   (option) =>
                     option.value.id === getID(field.value) ||
@@ -97,8 +112,105 @@ const UpdateAction = ({
         };
       }
     });
-    setUpdateData(tempUpdateData);
+    if (type === "subject" && selectedItem.batches) {
+      let batch = {};
+      Object.keys(selectedItem.batches).forEach((key) => (batch[key] = null));
+      Object.keys(selectedItem.batches).map(async (key) => {
+        studentService
+          .getAllStudent({
+            filter: { selectedStudents: selectedItem.batches[key] },
+          })
+          .then((res) => {
+            if (res.data) {
+              batch[key] = res.data;
+              let complete = true;
+              Object.keys(batch).forEach((key) => {
+                if (!batch[key]) complete = false;
+              });
+              if (complete) {
+                tempUpdateData.batches = batch;
+                setUpdateData(tempUpdateData);
+              }
+            }
+          });
+      });
+    } else {
+      setUpdateData(tempUpdateData);
+    }
   }, [fields, selectedItem, teachersData, subjectsData, coursesData]);
+
+  useEffect(() => {
+    if (selectedItem.batches) return;
+    if (
+      updateData.teacher?.length > 1 &&
+      updateData.course &&
+      updateData.year &&
+      studentsInfo &&
+      type === "subject"
+    ) {
+      let average = studentsInfo?.length / updateData.teacher?.length;
+      let start = 0;
+      let last = average;
+      const batches = {};
+      for (let i = 0; i < updateData.teacher?.length; i++) {
+        batches[updateData.teacher[i].value.id] = studentsInfo.slice(
+          start,
+          last
+        );
+        start = last;
+        last = last + average;
+      }
+      setUpdateData({ ...updateData, batches: batches });
+    } else if (updateData.teacher?.length <= 1) {
+      setUpdateData({ ...updateData, batches: null });
+    } else if (
+      updateData.teacher?.length > 1 &&
+      updateData.course &&
+      updateData.year &&
+      !studentsInfo &&
+      type === "subject"
+    ) {
+      studentService
+        .getAllStudent({
+          filter: {
+            departmentID: userData.departmentID,
+            courseID: updateData.course.value.id,
+            year: updateData.year.value,
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.data) {
+            setStudentsInfo(sortStudents(res.data));
+          }
+        });
+    }
+  }, [updateData.teacher, studentsInfo]);
+
+  useEffect(() => {
+    if (selectedItem.batches) return;
+    if (
+      updateData.teacher?.length > 1 &&
+      updateData.course &&
+      updateData.year &&
+      type === "subject"
+    ) {
+      studentService
+        .getAllStudent({
+          filter: {
+            departmentID: userData.departmentID,
+            courseID: updateData.course.value.id,
+            year: updateData.year.value,
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.data) {
+            setStudentsInfo(sortStudents(res.data));
+          }
+        });
+    }
+  }, [updateData.course, updateData.year]);
 
   const checkAllInput = () => {
     console.log("checking input");
@@ -119,7 +231,35 @@ const UpdateAction = ({
   const onUpdate = () => {
     handleOnUpdate(updateData);
   };
-  console.log(updateData.course);
+  console.log(updateData);
+
+  const getTeacherName = (id) => {
+    const teacher = updateData.teacher.find(
+      (teacher) => teacher.value.id === id
+    );
+    return teacher?.value?.name;
+  };
+
+  const getMoveButttons = (currentIndex, teacherKey) => {
+    let tempBatches = JSON.parse(JSON.stringify(updateData.batches));
+    const handleMove = (moveKey) => {
+      const student = tempBatches[teacherKey].splice(currentIndex, 1);
+      tempBatches[moveKey].push(student[0]);
+      setUpdateData({ ...updateData, batches: tempBatches });
+    };
+    return (
+      <div style={{ display: "flex", gap: "0.5rem" }}>
+        {Object.keys(updateData.batches).map(
+          (key, index) =>
+            key !== teacherKey && (
+              <Button variant="primary" onClick={() => handleMove(key)}>
+                {index + 1}
+              </Button>
+            )
+        )}
+      </div>
+    );
+  };
 
   return (
     <Modal
@@ -139,6 +279,7 @@ const UpdateAction = ({
         <Form>
           {fields.map((field, index) => {
             if (field.type === "password") return;
+            if (field.value == "teacher" && userData.role != "Admin") return;
             return (
               <Form.Group
                 as={Row}
@@ -196,6 +337,50 @@ const UpdateAction = ({
               </Form.Group>
             );
           })}
+
+          <div className="partitionLine"></div>
+          {updateData?.batches && (
+            <div className="studentBatches">
+              <h3>Batches</h3>
+              <Accordion>
+                {updateData.batches &&
+                  Object.keys(updateData.batches).map(
+                    (key, keyIndex) =>
+                      (userData.role !== "Teacher" || key === userData.id) && (
+                        <Accordion.Item eventKey={key}>
+                          <Accordion.Header>
+                            Batch {userData.role !== "Teacher" && keyIndex + 1}-{" "}
+                            {getTeacherName(key)} -{" "}
+                            {updateData.batches[key]?.length} students
+                          </Accordion.Header>
+                          <Accordion.Body
+                            style={{
+                              display: "flex",
+                              flexDirection: "column",
+                              gap: "1rem",
+                            }}
+                          >
+                            {updateData.batches[key].map((student, index) => (
+                              <div
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                <p>{`${index + 1}) ${student.name} - ${
+                                  student.uid
+                                }`}</p>
+                                {userData.role !== "Teacher" &&
+                                  getMoveButttons(index, key)}
+                              </div>
+                            ))}
+                          </Accordion.Body>
+                        </Accordion.Item>
+                      )
+                  )}
+              </Accordion>
+            </div>
+          )}
         </Form>
       </Modal.Body>
       <Modal.Footer>

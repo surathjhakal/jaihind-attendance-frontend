@@ -1,5 +1,13 @@
 import { useEffect, useState, useContext } from "react";
-import { Button, Col, Form, Modal, Row, Spinner } from "react-bootstrap";
+import {
+  Accordion,
+  Button,
+  Col,
+  Form,
+  Modal,
+  Row,
+  Spinner,
+} from "react-bootstrap";
 import "@/css/Actions.css";
 import Select from "react-select";
 import { useNavigate } from "react-router-dom";
@@ -9,6 +17,8 @@ import {
   yearFilterOptions,
 } from "@/utilities/autoCompleteOptions";
 import { toast } from "react-toastify";
+import studentService from "@/services/studentService";
+import { sortStudents } from "@/utilities/usefulFunctions";
 
 const CreateAction = ({
   handleCloseModal,
@@ -25,8 +35,59 @@ const CreateAction = ({
   const { userData }: any = useContext(HeaderContext);
   const navigate = useNavigate();
   const [createData, setCreateData]: any = useState({});
+  const [studentsInfo, setStudentsInfo]: any = useState(null);
 
-  console.log(createData.course, createData.year);
+  console.log(createData);
+
+  useEffect(() => {
+    if (
+      createData.teacher?.length > 1 &&
+      createData.course &&
+      createData.year &&
+      studentsInfo &&
+      type === "subject"
+    ) {
+      let average = studentsInfo?.length / createData.teacher?.length;
+      let start = 0;
+      let last = average;
+      const batches: any = {};
+      for (let i = 0; i < createData.teacher?.length; i++) {
+        batches[createData.teacher[i].value.id] = studentsInfo.slice(
+          start,
+          last
+        );
+        start = last;
+        last = last + average;
+      }
+      setCreateData({ ...createData, batches: batches });
+    } else if (createData.teacher?.length <= 1) {
+      setCreateData({ ...createData, batches: null });
+    }
+  }, [createData.teacher, studentsInfo]);
+
+  useEffect(() => {
+    if (
+      createData.teacher?.length > 1 &&
+      createData.course &&
+      createData.year &&
+      type === "subject"
+    ) {
+      studentService
+        .getAllStudent({
+          filter: {
+            departmentID: userData.departmentID,
+            courseID: createData.course.value.id,
+            year: createData.year.value,
+          },
+        })
+        .then((res) => {
+          console.log(res);
+          if (res.data) {
+            setStudentsInfo(sortStudents(res.data));
+          }
+        });
+    }
+  }, [createData.course, createData.year]);
 
   const getOptionsList = (value: string) => {
     if (value === "department") {
@@ -65,6 +126,7 @@ const CreateAction = ({
 
   const checkAllInput = () => {
     console.log("checking input");
+    console.log(createData);
     let checkInput = false;
     Object.keys(createData).forEach((key) => {
       console.log(key, createData[key]);
@@ -75,6 +137,7 @@ const CreateAction = ({
         createData[key]?.length == 0
       )
         checkInput = true;
+      if (key === "batches") checkInput = false;
     });
 
     return checkInput;
@@ -92,6 +155,34 @@ const CreateAction = ({
     } else {
       handleOnCreate(createData);
     }
+  };
+
+  const getTeacherName = (id: any) => {
+    const teacher: any = createData.teacher.find(
+      (teacher: any) => teacher.value.id === id
+    );
+    return teacher?.value?.name;
+  };
+
+  const getMoveButttons = (currentIndex: any, teacherKey: any) => {
+    let tempBatches: any = JSON.parse(JSON.stringify(createData.batches));
+    const handleMove = (moveKey: any) => {
+      const student: any = tempBatches[teacherKey].splice(currentIndex, 1);
+      tempBatches[moveKey].push(student[0]);
+      setCreateData({ ...createData, batches: tempBatches });
+    };
+    return (
+      <div style={{ display: "flex", gap: "0.5rem" }}>
+        {Object.keys(createData.batches).map(
+          (key: any, index: any) =>
+            key !== teacherKey && (
+              <Button variant="primary" onClick={() => handleMove(key)}>
+                {index + 1}
+              </Button>
+            )
+        )}
+      </div>
+    );
   };
 
   return (
@@ -170,6 +261,48 @@ const CreateAction = ({
               </Form.Group>
             );
           })}
+
+          <div className="partitionLine"></div>
+
+          {createData.batches && (
+            <div className="studentBatches">
+              <h3>Batches</h3>
+              <Accordion>
+                {createData.batches &&
+                  Object.keys(createData.batches).map((key, keyIndex) => (
+                    <Accordion.Item eventKey={key}>
+                      <Accordion.Header>
+                        Batch {keyIndex + 1}- {getTeacherName(key)} -{" "}
+                        {createData.batches[key]?.length} students
+                      </Accordion.Header>
+                      <Accordion.Body
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          gap: "1rem",
+                        }}
+                      >
+                        {createData.batches[key].map(
+                          (student: any, index: any) => (
+                            <div
+                              style={{
+                                display: "flex",
+                                justifyContent: "space-between",
+                              }}
+                            >
+                              <p>{`${index + 1}) ${student.name} - ${
+                                student.uid
+                              }`}</p>
+                              {getMoveButttons(index, key)}
+                            </div>
+                          )
+                        )}
+                      </Accordion.Body>
+                    </Accordion.Item>
+                  ))}
+              </Accordion>
+            </div>
+          )}
 
           <Form.Group as={Row} className="mb-3">
             <Col sm={{ span: 10, offset: 2 }} className="actionButtons">

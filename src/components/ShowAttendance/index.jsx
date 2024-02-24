@@ -33,7 +33,11 @@ const ShowAttendance = ({ handleCloseModal, selectedItem, showModal }) => {
     }
     sem = sem + "";
     studentService
-      .getAttendance({ courseID: selectedItem.courseID, sem: sem })
+      .getAttendance({
+        courseID: selectedItem.courseID,
+        sem: sem,
+        studentID: selectedItem.id,
+      })
       .then((res) => {
         setLoadAttendance(false);
         setAttendanceData(res.data);
